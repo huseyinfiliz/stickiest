@@ -21,7 +21,7 @@ app.initializers.add(
     Discussion.prototype.isTagSticky = Model.attribute('isTagSticky');
     Discussion.prototype.canStickiest = Model.attribute('canStickiest');
     Discussion.prototype.canTagSticky = Model.attribute('canTagSticky');
-    Discussion.prototype.stickyTags = Model.hasMany('stickyTags');
+    Discussion.prototype.stickyTags = Model.hasMany('stickyTags') as () => any[];
 
     // Extend UI
     extendDiscussionBadges();

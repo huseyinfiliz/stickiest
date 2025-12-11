@@ -24,7 +24,7 @@ export default function extendDiscussionControls() {
         Button.component(
           {
             icon: 'fas fa-thumbtack',
-            onclick: () => app.modal.show(StickyModal, { discussion }),
+            onclick: () => app.modal.show(StickyModal as any, { discussion }),
           },
           app.translator.trans('huseyinfiliz-stickiest.forum.discussion_controls.sticky_button')
         ),

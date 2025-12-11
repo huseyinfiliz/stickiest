@@ -9,7 +9,7 @@ export default function extendDiscussionBadges() {
   extend(Discussion.prototype, 'badges', function (badges: ItemList<Mithril.Children>) {
     // Super Sticky badge
     if (this.isStickiest()) {
-      const icon = app.forum.attribute('huseyinfiliz-stickiest.stickiest_icon') || 'fas fa-star';
+      const icon = app.forum.attribute<string>('huseyinfiliz-stickiest.stickiest_icon') || 'fas fa-star';
 
       badges.add(
         'stickiest',

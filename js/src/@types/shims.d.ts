@@ -6,6 +6,9 @@ declare module 'flarum/common/models/Discussion' {
     isTagSticky(): boolean;
     canStickiest(): boolean;
     canTagSticky(): boolean;
-    stickyTags(): any[];
+    stickyTags(): Tag[];
+    // flarum/sticky'den gelen opsiyonel metodlar
+    isSticky?(): boolean;
+    canSticky?(): boolean;
   }
 }

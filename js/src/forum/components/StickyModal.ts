@@ -1,12 +1,12 @@
 import app from 'flarum/forum/app';
-import FormModal from 'flarum/common/components/FormModal';
+import FormModal, { IFormModalAttrs } from 'flarum/common/components/FormModal';
 import Button from 'flarum/common/components/Button';
 import Switch from 'flarum/common/components/Switch';
 import Stream from 'flarum/common/utils/Stream';
 import type Discussion from 'flarum/common/models/Discussion';
 import type Mithril from 'mithril';
 
-interface StickyModalAttrs {
+interface StickyModalAttrs extends IFormModalAttrs {
   discussion: Discussion;
 }
 
@@ -26,7 +26,7 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
     this.isStickiest = Stream(discussion.isStickiest() || false);
     this.isTagSticky = Stream(discussion.isTagSticky() || false);
 
-    const stickyTagIds = discussion.attribute('stickyTagIds') || [];
+    const stickyTagIds = discussion.attribute<number[]>('stickyTagIds') || [];
     this.selectedTagIds = Stream(stickyTagIds);
   }
 
@@ -43,7 +43,7 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
 
   content(): Mithril.Children {
     const discussion = this.attrs.discussion;
-    const discussionTags: any[] = discussion.tags?.() || [];
+    const discussionTags: any[] = (discussion as any).tags?.() || [];
 
     // flarum/sticky yüklü mü kontrol et
     const hasStickyExtension = typeof discussion.canSticky === 'function';
@@ -51,7 +51,7 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
     const items: Mithril.Children[] = [];
 
     // Normal Sticky - sadece flarum/sticky yüklüyse göster
-    if (hasStickyExtension && discussion.canSticky()) {
+    if (hasStickyExtension && discussion.canSticky?.()) {
       items.push(
         m('.Form-group', {}, [
           m(
