@@ -21,6 +21,7 @@ use HuseyinFiliz\Stickiest\Access\DiscussionPolicy;
 use HuseyinFiliz\Stickiest\Event\DiscussionWasStickiest;
 use HuseyinFiliz\Stickiest\Event\DiscussionWasUnstickiest;
 use HuseyinFiliz\Stickiest\Listener\CreatePostWhenStickiest;
+use HuseyinFiliz\Stickiest\Listener\CreatePostWhenUnstickiest;
 use HuseyinFiliz\Stickiest\Listener\SaveStickyState;
 use HuseyinFiliz\Stickiest\Post\DiscussionStickiestPost;
 use HuseyinFiliz\Stickiest\Search\StickySearchMutator;
@@ -55,8 +56,8 @@ return [
     // Event listeners
     (new Extend\Event())
         ->listen(\Flarum\Discussion\Event\Saving::class, SaveStickyState::class)
-        ->listen(DiscussionWasStickiest::class, [CreatePostWhenStickiest::class, 'whenStickiest'])
-        ->listen(DiscussionWasUnstickiest::class, [CreatePostWhenStickiest::class, 'whenUnstickiest']),
+        ->listen(DiscussionWasStickiest::class, CreatePostWhenStickiest::class)
+        ->listen(DiscussionWasUnstickiest::class, CreatePostWhenUnstickiest::class),
 
     // Sıralama - super sticky en üste
     (new Extend\SearchDriver(DatabaseSearchDriver::class))

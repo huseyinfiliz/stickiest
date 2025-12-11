@@ -1,35 +1,35 @@
 huseyinfiliz-stickiest:
   admin:
     settings:
-      show_tag_sticky_label: Etiket sabitlerini Tüm Tartışmalarda göster
-      show_tag_sticky_help: Devre dışı bırakıldığında, etiket sabit tartışmalar yalnızca o etikete bakıldığında görünür.
-      stickiest_icon_label: Süper sabit rozet ikonu
-      stickiest_icon_help: Font Awesome ikon sınıfı (örn. fas fa-star)
+      show_tag_sticky_label: Show tag stickies in All Discussions
+      show_tag_sticky_help: When disabled, tag sticky discussions only appear when viewing that specific tag.
+      stickiest_icon_label: Super sticky badge icon
+      stickiest_icon_help: Font Awesome icon class (e.g., fas fa-star)
     
     permissions:
-      stickiest_label: Tartışmaları süper sabitle
-      tag_sticky_label: Tartışmaları etikete sabitle
+      stickiest_label: Super sticky discussions
+      tag_sticky_label: Tag sticky discussions
 
   forum:
     badge:
-      sticky_tooltip: Sabit
-      stickiest_tooltip: Süper Sabit
-      tag_sticky_tooltip: Etikete Sabit
+      sticky_tooltip: Sticky
+      stickiest_tooltip: Super Sticky
+      tag_sticky_tooltip: Tag Sticky
     
     discussion_controls:
-      sticky_button: Sabitle
+      sticky_button: Sticky
     
     sticky_modal:
-      title: "Sabitle: {title}"
-      sticky_label: Sabit
-      sticky_help: Okunmamışken Tüm Tartışmalarda, her zaman etiket görünümünde üstte sabitlenir.
-      stickiest_label: Süper Sabit
-      stickiest_help: Her yerde her zaman en üstte sabitlenir.
-      tag_sticky_label: Etikete Sabit
-      tag_sticky_help: Yalnızca seçilen etiketler görüntülenirken sabitlenir.
-      select_tags: Etiketleri seç
-      submit_button: Değişiklikleri Kaydet
+      title: "Sticky: {title}"
+      sticky_label: Sticky
+      sticky_help: Pin to top in All Discussions when unread, always pinned in tag view.
+      stickiest_label: Super Sticky
+      stickiest_help: Always pinned to the very top everywhere.
+      tag_sticky_label: Tag Sticky
+      tag_sticky_help: Only pinned when viewing selected tags.
+      select_tags: Select tags
+      submit_button: Save Changes
 
     post_stream:
-      discussion_stickiest_text: "{username} bu tartışmayı süper sabit olarak sabitledi."
-      discussion_unstickiest_text: "{username} bu tartışmanın süper sabit durumunu kaldırdı."
+      discussion_stickiest_text: "{username} marked the discussion as super sticky."
+      discussion_unstickiest_text: "{username} unmarked the discussion as super sticky."

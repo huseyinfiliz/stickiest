@@ -2,17 +2,17 @@
 
 namespace HuseyinFiliz\Stickiest\Listener;
 
-use HuseyinFiliz\Stickiest\Event\DiscussionWasStickiest;
+use HuseyinFiliz\Stickiest\Event\DiscussionWasUnstickiest;
 use HuseyinFiliz\Stickiest\Post\DiscussionStickiestPost;
 
-class CreatePostWhenStickiest
+class CreatePostWhenUnstickiest
 {
-    public function handle(DiscussionWasStickiest $event): void
+    public function handle(DiscussionWasUnstickiest $event): void
     {
         $post = DiscussionStickiestPost::reply(
             $event->discussion->id,
             $event->actor->id,
-            true
+            false
         );
 
         $event->discussion->mergePost($post);

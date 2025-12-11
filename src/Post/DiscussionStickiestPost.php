@@ -2,6 +2,7 @@
 
 namespace HuseyinFiliz\Stickiest\Post;
 
+use Carbon\Carbon;
 use Flarum\Post\AbstractEventPost;
 use Flarum\Post\MergeableInterface;
 use Flarum\Post\Post;
@@ -34,7 +35,7 @@ class DiscussionStickiestPost extends AbstractEventPost implements MergeableInte
         $post = new static();
 
         $post->content = ['stickiest' => $isStickiest];
-        $post->created_at = now();
+        $post->created_at = Carbon::now();
         $post->discussion_id = $discussionId;
         $post->user_id = $userId;
 

@@ -29,3 +29,7 @@ huseyinfiliz-stickiest:
       tag_sticky_help: Yalnızca seçilen etiketler görüntülenirken sabitlenir.
       select_tags: Etiketleri seç
       submit_button: Değişiklikleri Kaydet
+
+    post_stream:
+      discussion_stickiest_text: "{username} bu tartışmayı süper sabitledi."
+      discussion_unstickiest_text: "{username} bu tartışmanın süper sabitlenmesini kaldırdı."
