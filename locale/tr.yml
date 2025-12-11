@@ -1,0 +1,31 @@
+huseyinfiliz-stickiest:
+  admin:
+    settings:
+      show_tag_sticky_label: Etiket sabitlerini Tüm Tartışmalarda göster
+      show_tag_sticky_help: Devre dışı bırakıldığında, etiket sabit tartışmalar yalnızca o etikete bakıldığında görünür.
+      stickiest_icon_label: Süper sabit rozet ikonu
+      stickiest_icon_help: Font Awesome ikon sınıfı (örn. fas fa-star)
+    
+    permissions:
+      stickiest_label: Tartışmaları süper sabitle
+      tag_sticky_label: Tartışmaları etikete sabitle
+
+  forum:
+    badge:
+      sticky_tooltip: Sabit
+      stickiest_tooltip: Süper Sabit
+      tag_sticky_tooltip: Etikete Sabit
+    
+    discussion_controls:
+      sticky_button: Sabitle
+    
+    sticky_modal:
+      title: "Sabitle: {title}"
+      sticky_label: Sabit
+      sticky_help: Okunmamışken Tüm Tartışmalarda, her zaman etiket görünümünde üstte sabitlenir.
+      stickiest_label: Süper Sabit
+      stickiest_help: Her yerde her zaman en üstte sabitlenir.
+      tag_sticky_label: Etikete Sabit
+      tag_sticky_help: Yalnızca seçilen etiketler görüntülenirken sabitlenir.
+      select_tags: Etiketleri seç
+      submit_button: Değişiklikleri Kaydet

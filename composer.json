@@ -1,0 +1,63 @@
+{
+    "name": "huseyinfiliz/stickiest",
+    "description": "Stick, super stick or tag stick discussions to the top of the list.",
+    "keywords": [
+        "flarum",
+        "discussion",
+        "sticky",
+        "pin",
+        "super-sticky"
+    ],
+    "type": "flarum-extension",
+    "license": "MIT",
+    "require": {
+        "flarum/core": "^2.0",
+        "flarum/tags": "*"
+    },
+    "authors": [
+        {
+            "name": "Hüseyin Filiz",
+            "email": "mysuperuser01@gmail.com",
+            "homepage": "https://huseyinfiliz.com.tr",
+            "role": "Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "HuseyinFiliz\\Stickiest\\": "src/"
+        }
+    },
+    "extra": {
+        "flarum-extension": {
+            "title": "Stickiest",
+            "category": "feature",
+            "icon": {
+                "name": "fas fa-thumbtack",
+                "color": "#fff",
+                "backgroundColor": "#3498db"
+            }
+        },
+        "flarum-cli": {
+            "modules": {
+                "admin": true,
+                "forum": true,
+                "js": true,
+                "jsCommon": true,
+                "css": true,
+                "locale": true,
+                "gitConf": true,
+                "githubActions": true,
+                "prettier": true,
+                "typescript": true,
+                "bundlewatch": false,
+                "frontendTesting": false,
+                "backendTesting": false,
+                "phpstan": false,
+                "editorConfig": true,
+                "styleci": true
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}

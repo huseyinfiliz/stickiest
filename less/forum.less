@@ -1,0 +1,54 @@
+// Stickiest Badge
+.Badge--stickiest {
+  background: #e74c3c;
+}
+
+.Badge--tagSticky {
+  background: #3498db;
+}
+
+// Discussion List Item Styling
+.DiscussionListItem {
+  &.Stickiest-superSticky {
+    background: rgba(231, 76, 60, 0.05);
+    border-left: 3px solid #e74c3c;
+  }
+
+  &.Stickiest-tagSticky {
+    background: rgba(52, 152, 219, 0.05);
+    border-left: 3px solid #3498db;
+  }
+
+  &.Stickiest-sticky {
+    border-left: 3px solid #f39c12;
+  }
+}
+
+// Sticky Modal
+.StickyModal {
+  .StickyModal-tags {
+    margin-top: 10px;
+
+    .checkbox {
+      display: block;
+      margin-bottom: 8px;
+
+      input[type="checkbox"] {
+        margin-right: 8px;
+      }
+
+      .TagLabel {
+        padding: 2px 8px;
+        border-radius: 3px;
+        color: #fff;
+        font-size: 12px;
+      }
+    }
+  }
+
+  .helpText {
+    margin-top: 5px;
+    font-size: 12px;
+    color: #777;
+  }
+}
