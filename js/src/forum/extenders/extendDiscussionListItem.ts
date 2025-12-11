@@ -5,7 +5,7 @@ import classList from 'flarum/common/utils/classList';
 export default function extendDiscussionListItem() {
   extend(DiscussionListItem.prototype, 'elementAttrs', function (attrs) {
     const discussion = this.attrs.discussion;
-    
+
     // isSticky flarum/sticky'den geliyor, yoksa false kabul et
     const isSticky = typeof discussion.isSticky === 'function' ? discussion.isSticky() : false;
 

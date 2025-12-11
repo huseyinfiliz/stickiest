@@ -10,7 +10,7 @@ export default function extendDiscussionBadges() {
     // Super Sticky badge
     if (this.isStickiest()) {
       const icon = app.forum.attribute('huseyinfiliz-stickiest.stickiest_icon') || 'fas fa-star';
-      
+
       badges.add(
         'stickiest',
         Badge.component({

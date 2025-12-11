@@ -44,7 +44,7 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
   content(): Mithril.Children {
     const discussion = this.attrs.discussion;
     const discussionTags: any[] = discussion.tags?.() || [];
-    
+
     // flarum/sticky yüklü mü kontrol et
     const hasStickyExtension = typeof discussion.canSticky === 'function';
 
@@ -54,16 +54,20 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
     if (hasStickyExtension && discussion.canSticky()) {
       items.push(
         m('.Form-group', {}, [
-          m(Switch, {
-            state: this.isSticky(),
-            onchange: (value: boolean) => {
-              this.isSticky(value);
-              if (value) {
-                this.isStickiest(false);
-                this.isTagSticky(false);
-              }
+          m(
+            Switch,
+            {
+              state: this.isSticky(),
+              onchange: (value: boolean) => {
+                this.isSticky(value);
+                if (value) {
+                  this.isStickiest(false);
+                  this.isTagSticky(false);
+                }
+              },
             },
-          }, app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.sticky_label')),
+            app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.sticky_label')
+          ),
           m('p.helpText', {}, app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.sticky_help')),
         ])
       );
@@ -73,15 +77,19 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
     if (discussion.canStickiest()) {
       items.push(
         m('.Form-group', {}, [
-          m(Switch, {
-            state: this.isStickiest(),
-            onchange: (value: boolean) => {
-              this.isStickiest(value);
-              if (value) {
-                this.isSticky(false);
-              }
+          m(
+            Switch,
+            {
+              state: this.isStickiest(),
+              onchange: (value: boolean) => {
+                this.isStickiest(value);
+                if (value) {
+                  this.isSticky(false);
+                }
+              },
             },
-          }, app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.stickiest_label')),
+            app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.stickiest_label')
+          ),
           m('p.helpText', {}, app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.stickiest_help')),
         ])
       );
@@ -91,15 +99,19 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
     if (discussion.canTagSticky()) {
       items.push(
         m('.Form-group', {}, [
-          m(Switch, {
-            state: this.isTagSticky(),
-            onchange: (value: boolean) => {
-              this.isTagSticky(value);
-              if (value) {
-                this.isSticky(false);
-              }
+          m(
+            Switch,
+            {
+              state: this.isTagSticky(),
+              onchange: (value: boolean) => {
+                this.isTagSticky(value);
+                if (value) {
+                  this.isSticky(false);
+                }
+              },
             },
-          }, app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.tag_sticky_label')),
+            app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.tag_sticky_label')
+          ),
           m('p.helpText', {}, app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.tag_sticky_help')),
         ])
       );
@@ -141,25 +153,29 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
 
     // Submit Button
     items.push(
-      m('.Form-group', {},
-        m(Button, {
-          type: 'submit',
-          className: 'Button Button--primary',
-          loading: this.loading,
-        }, app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.submit_button'))
+      m(
+        '.Form-group',
+        {},
+        m(
+          Button,
+          {
+            type: 'submit',
+            className: 'Button Button--primary',
+            loading: this.loading,
+          },
+          app.translator.trans('huseyinfiliz-stickiest.forum.sticky_modal.submit_button')
+        )
       )
     );
 
-    return m('.Modal-body', {},
-      m('.Form', {}, items)
-    );
+    return m('.Modal-body', {}, m('.Form', {}, items));
   }
 
   onsubmit(e: SubmitEvent): void {
     e.preventDefault();
 
     this.loading = true;
-    
+
     const discussion = this.attrs.discussion;
     const hasStickyExtension = typeof discussion.canSticky === 'function';
 
