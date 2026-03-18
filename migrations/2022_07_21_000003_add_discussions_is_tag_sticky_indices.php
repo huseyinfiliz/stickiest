@@ -13,42 +13,44 @@ use Illuminate\Database\Schema\Builder;
 return [
     'up' => function (Builder $schema) {
         $connection = $schema->getConnection();
+        $prefix = $connection->getTablePrefix();
 
         $hasIndex1 = count($connection->select(
-            "SHOW INDEX FROM `discussions` WHERE `Key_name` = 'discussions_is_tag_sticky_last_posted_at_index'"
+            "SHOW INDEX FROM `{$prefix}discussions` WHERE `Key_name` = '{$prefix}discussions_is_tagsticky_last_posted_at_index'"
         )) > 0;
 
         $hasIndex2 = count($connection->select(
-            "SHOW INDEX FROM `discussions` WHERE `Key_name` = 'discussions_is_tag_sticky_created_at_index'"
+            "SHOW INDEX FROM `{$prefix}discussions` WHERE `Key_name` = '{$prefix}discussions_is_tagsticky_created_at_index'"
         )) > 0;
 
         $schema->table('discussions', function (Blueprint $table) use ($hasIndex1, $hasIndex2) {
-            if (!$hasIndex1) {
-                $table->index(['is_tag_sticky', 'last_posted_at']);
+            if ($hasIndex1) {
+                $table->dropIndex(['is_tagSticky', 'last_posted_at']);
             }
-            if (!$hasIndex2) {
-                $table->index(['is_tag_sticky', 'created_at']);
+            if ($hasIndex2) {
+                $table->dropIndex(['is_tagSticky', 'created_at']);
             }
         });
     },
 
     'down' => function (Builder $schema) {
         $connection = $schema->getConnection();
+        $prefix = $connection->getTablePrefix();
 
         $hasIndex1 = count($connection->select(
-            "SHOW INDEX FROM `discussions` WHERE `Key_name` = 'discussions_is_tag_sticky_last_posted_at_index'"
+            "SHOW INDEX FROM `{$prefix}discussions` WHERE `Key_name` = '{$prefix}discussions_is_tagsticky_last_posted_at_index'"
         )) > 0;
 
         $hasIndex2 = count($connection->select(
-            "SHOW INDEX FROM `discussions` WHERE `Key_name` = 'discussions_is_tag_sticky_created_at_index'"
+            "SHOW INDEX FROM `{$prefix}discussions` WHERE `Key_name` = '{$prefix}discussions_is_tagsticky_created_at_index'"
         )) > 0;
 
         $schema->table('discussions', function (Blueprint $table) use ($hasIndex1, $hasIndex2) {
-            if ($hasIndex1) {
-                $table->dropIndex(['is_tag_sticky', 'last_posted_at']);
+            if (!$hasIndex1) {
+                $table->index(['is_tagSticky', 'last_posted_at']);
             }
-            if ($hasIndex2) {
-                $table->dropIndex(['is_tag_sticky', 'created_at']);
+            if (!$hasIndex2) {
+                $table->index(['is_tagSticky', 'created_at']);
             }
         });
     },
