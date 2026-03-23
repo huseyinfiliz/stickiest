@@ -26,11 +26,15 @@ class StickySearchMutator
         $baseQuery = $query->getQuery();
         
         // Tag filtresi var mı kontrol et
+        // Flarum 2.x beta8+ filter değerleri array olarak geliyor
         $tagSlug = Arr::get($criteria->filters, 'tag');
+        if (is_array($tagSlug)) {
+            $tagSlug = Arr::first($tagSlug) ?: null;
+        }
         
         if ($tagSlug) {
             // Tag sayfasındayız - tag sticky'leri de üste al
-            $tagId = $this->tags->getIdForSlug($tagSlug);
+            $tagId = $this->tags->getIdForSlug((string) $tagSlug);
             
             if ($tagId) {
                 // Bu tag için sticky olanları üste çıkar
