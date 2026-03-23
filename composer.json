@@ -14,6 +14,9 @@
         "flarum/core": "^2.0",
         "flarum/tags": "*"
     },
+    "require-dev": {
+        "flarum/testing": "^2.0"
+    },
     "authors": [
         {
             "name": "Hüseyin Filiz",
@@ -26,6 +29,24 @@
         "psr-4": {
             "HuseyinFiliz\\Stickiest\\": "src/"
         }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "HuseyinFiliz\\Stickiest\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "test": [
+            "@test:unit",
+            "@test:integration"
+        ],
+        "test:unit": "phpunit -c tests/phpunit.unit.xml",
+        "test:integration": "phpunit -c tests/phpunit.integration.xml",
+        "test:setup": "php tests/integration/setup.php"
+    },
+    "scripts-descriptions": {
+        "test": "Runs all tests.",
+        "test:setup": "Sets up the integration test environment."
     },
     "extra": {
         "flarum-extension": {

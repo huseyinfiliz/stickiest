@@ -8,6 +8,7 @@
     colors="true"
     processIsolation="true"
     stopOnFailure="false"
+    failOnEmptyTestSuite="false"
 >
     <source>
         <include>
