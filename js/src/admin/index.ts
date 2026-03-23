@@ -12,6 +12,12 @@ app.initializers.add('huseyinfiliz-stickiest', () => {
       type: 'boolean',
     })
     .registerSetting({
+      setting: 'huseyinfiliz-stickiest.show_sticky_highlight',
+      label: app.translator.trans('huseyinfiliz-stickiest.admin.settings.show_sticky_highlight_label'),
+      help: app.translator.trans('huseyinfiliz-stickiest.admin.settings.show_sticky_highlight_help'),
+      type: 'boolean',
+    })
+    .registerSetting({
       setting: 'huseyinfiliz-stickiest.stickiest_icon',
       label: app.translator.trans('huseyinfiliz-stickiest.admin.settings.stickiest_icon_label'),
       help: app.translator.trans('huseyinfiliz-stickiest.admin.settings.stickiest_icon_help'),

@@ -67,8 +67,12 @@ return [
     (new Extend\Settings())
         ->default('huseyinfiliz-stickiest.show_tag_sticky_in_all', false)
         ->default('huseyinfiliz-stickiest.stickiest_icon', 'fas fa-star')
+        ->default('huseyinfiliz-stickiest.show_sticky_highlight', true)
         ->serializeToForum('huseyinfiliz-stickiest.stickiest_icon', 'huseyinfiliz-stickiest.stickiest_icon')
         ->serializeToForum('huseyinfiliz-stickiest.show_tag_sticky_in_all', 'huseyinfiliz-stickiest.show_tag_sticky_in_all', function ($value) {
+            return (bool) $value;
+        })
+        ->serializeToForum('huseyinfiliz-stickiest.show_sticky_highlight', 'huseyinfiliz-stickiest.show_sticky_highlight', function ($value) {
             return (bool) $value;
         }),
 ];
