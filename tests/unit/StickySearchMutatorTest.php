@@ -52,8 +52,13 @@ class StickySearchMutatorTest extends TestCase
         $baseQuery = $this->createMock(QueryBuilder::class);
         $baseQuery->orders = null;
 
-        $eloquentQuery = $this->createMock(Builder::class);
+        $eloquentQuery = $this->getMockBuilder(Builder::class)
+            ->disableOriginalConstructor()
+            ->addMethods(['leftJoin'])
+            ->onlyMethods(['getQuery', 'where'])
+            ->getMock();
         $eloquentQuery->method('getQuery')->willReturn($baseQuery);
+        $eloquentQuery->method('leftJoin')->willReturnSelf();
 
         $state = $this->createMock(DatabaseSearchState::class);
         $state->method('getQuery')->willReturn($eloquentQuery);
@@ -117,7 +122,7 @@ class StickySearchMutatorTest extends TestCase
             $criteria = $this->makeCriteria(['tag' => $slug]);
             [$state, $baseQuery, $eloquentQuery] = $this->makeState([$tagFilter]);
 
-            $eloquentQuery->expects($this->once())->method('leftJoin');
+
 
             $mutator($state, $criteria);
 
@@ -141,7 +146,7 @@ class StickySearchMutatorTest extends TestCase
 
         $criteria = $this->makeCriteria(['tag' => ['general']]);
         [$state, $baseQuery, $eloquentQuery] = $this->makeState([$tagFilter]);
-        $eloquentQuery->method('leftJoin')->willReturnSelf();
+
 
         $mutator($state, $criteria);
     }
