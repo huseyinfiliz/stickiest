@@ -34,8 +34,14 @@ class StickySearchMutatorTest extends TestCase
 
     private function makeCriteria(array $filters = [], bool $sortIsDefault = true): SearchCriteria
     {
-        $actor = new \stdClass();
-        $criteria = new SearchCriteria($actor, [], $filters);
+        use Flarum\User\User;
+
+		private function makeUser(): User
+		{
+    		return $this->createMock(User::class);
+		}
+
+		$criteria = new SearchCriteria($this->makeUser(), [], $filters);
         $criteria->sortIsDefault = $sortIsDefault;
 
         return $criteria;
