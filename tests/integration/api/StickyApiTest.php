@@ -32,6 +32,7 @@ class StickyApiTest extends TestCase
                 [
                     'id'             => 1,
                     'title'          => 'Normal Discussion',
+                    'slug'           => 'normal-discussion',
                     'created_at'     => Carbon::now()->toDateTimeString(),
                     'last_posted_at' => Carbon::now()->toDateTimeString(),
                     'user_id'        => 1,
@@ -43,6 +44,7 @@ class StickyApiTest extends TestCase
                 [
                     'id'             => 2,
                     'title'          => 'Super Sticky Discussion',
+                    'slug'           => 'super-sticky-discussion',
                     'created_at'     => Carbon::now()->toDateTimeString(),
                     'last_posted_at' => Carbon::now()->toDateTimeString(),
                     'user_id'        => 1,
@@ -75,7 +77,7 @@ class StickyApiTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $body = json_decode($response->getBody()->getContents(), true);
+        $body  = json_decode($response->getBody()->getContents(), true);
         $attrs = $body['data']['attributes'];
 
         $this->assertTrue($attrs['isStickiest']);

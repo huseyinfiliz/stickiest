@@ -22,6 +22,7 @@ class MigrationTest extends TestCase
                 [
                     'id'             => 1,
                     'title'          => 'Test Discussion',
+                    'slug'           => 'test-discussion',
                     'created_at'     => Carbon::now()->toDateTimeString(),
                     'last_posted_at' => Carbon::now()->toDateTimeString(),
                     'user_id'        => 1,
