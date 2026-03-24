@@ -2,6 +2,7 @@
 
 namespace HuseyinFiliz\Stickiest\Tests\integration;
 
+use Carbon\Carbon;
 use Flarum\Testing\integration\TestCase;
 
 class MigrationTest extends TestCase
@@ -12,13 +13,35 @@ class MigrationTest extends TestCase
 
         $this->extension('flarum-tags');
         $this->extension('huseyinfiliz-stickiest');
+
+        $this->prepareDatabase([
+            'users' => [
+                ['id' => 1, 'username' => 'admin', 'email' => 'admin@example.com', 'password' => '$2y$10$LO59tiT7uggl6Oe23o/O6uxy7CHhy3400ZBGl5bCAwtKEBF3UFKCO', 'is_email_confirmed' => 1],
+            ],
+            'discussions' => [
+                [
+                    'id'             => 1,
+                    'title'          => 'Test Discussion',
+                    'created_at'     => Carbon::now()->toDateTimeString(),
+                    'last_posted_at' => Carbon::now()->toDateTimeString(),
+                    'user_id'        => 1,
+                    'first_post_id'  => 1,
+                    'comment_count'  => 1,
+                    'is_stickiest'   => false,
+                    'is_tag_sticky'  => false,
+                ],
+            ],
+            'posts' => [
+                ['id' => 1, 'number' => 1, 'discussion_id' => 1, 'created_at' => Carbon::now()->toDateTimeString(), 'user_id' => 1, 'type' => 'comment', 'content' => '<t><p>Test</p></t>'],
+            ],
+        ]);
     }
 
     /** @test */
     public function is_stickiest_column_exists(): void
     {
         $this->database()->statement('SELECT is_stickiest FROM discussions LIMIT 0');
-        $this->assertTrue(true); // no exception = column exists
+        $this->assertTrue(true);
     }
 
     /** @test */
@@ -38,8 +61,6 @@ class MigrationTest extends TestCase
     /** @test */
     public function migration_is_idempotent_when_columns_already_exist(): void
     {
-        // Simulates upgrading from 1.x: run migration again when columns exist.
-        // The migration uses hasColumn() guards, so it should not throw.
         $schema = $this->database()->getSchemaBuilder();
 
         $this->assertTrue($schema->hasColumn('discussions', 'is_stickiest'));
@@ -50,11 +71,9 @@ class MigrationTest extends TestCase
     /** @test */
     public function existing_sticky_data_is_preserved_after_migration(): void
     {
-        // Insert 1.x-style data directly (as if migrating from the-turk/stickiest)
-        $this->database()->table('discussions')->where('id', 1)->update([
-            'is_stickiest'  => true,
-            'is_tag_sticky' => false,
-        ]);
+        $this->database()->table('discussions')
+            ->where('id', 1)
+            ->update(['is_stickiest' => true, 'is_tag_sticky' => false]);
 
         $discussion = $this->database()->table('discussions')->where('id', 1)->first();
 
@@ -67,7 +86,7 @@ class MigrationTest extends TestCase
     {
         $stickyPerm = $this->database()
             ->table('group_permission')
-            ->where('group_id', 4) // moderator group
+            ->where('group_id', 4)
             ->where('permission', 'discussion.stickiest')
             ->exists();
 
