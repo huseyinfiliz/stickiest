@@ -7,8 +7,8 @@ return [
     'up' => function (Builder $schema) {
         if (!$schema->hasColumn('discussions', 'is_stickiest')) {
             $schema->table('discussions', function (Blueprint $table) {
-                $table->boolean('is_stickiest')->default(false)->after('is_sticky');
-                $table->boolean('is_tag_sticky')->default(false)->after('is_stickiest');
+                $table->boolean('is_stickiest')->default(false);
+                $table->boolean('is_tag_sticky')->default(false);
             });
         }
     },
