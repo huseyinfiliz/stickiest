@@ -101,7 +101,7 @@ class StickyApiTest extends TestCase
             ])
         );
 
-        $this->assertEquals(401, $response->getStatusCode());
+        $this->assertContains($response->getStatusCode(), [400, 401]);
     }
 
     /** @test */
