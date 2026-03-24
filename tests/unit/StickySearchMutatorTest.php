@@ -41,7 +41,7 @@ class StickySearchMutatorTest extends TestCase
     private function makeCriteria(array $filters = [], bool $sortIsDefault = true): SearchCriteria
     {
         // SearchCriteria::__construct(User $actor, ?array $sort, ?int $limit, int $offset, array $filters)
-        $criteria = new SearchCriteria($this->makeUser(), null, null, 0, $filters);
+        $criteria = new SearchCriteria($this->makeUser(), $filters);
         $criteria->sortIsDefault = $sortIsDefault;
 
         return $criteria;
