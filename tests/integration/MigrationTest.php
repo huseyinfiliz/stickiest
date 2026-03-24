@@ -41,27 +41,39 @@ class MigrationTest extends TestCase
     /** @test */
     public function is_stickiest_column_exists(): void
     {
-        $this->database()->statement('SELECT is_stickiest FROM discussions LIMIT 0');
-        $this->assertTrue(true);
+        // Boot the app (runs migrations) by sending a request first
+        $this->send($this->request('GET', '/api'));
+
+        $this->assertTrue(
+            $this->database()->getSchemaBuilder()->hasColumn('discussions', 'is_stickiest')
+        );
     }
 
     /** @test */
     public function is_tag_sticky_column_exists(): void
     {
-        $this->database()->statement('SELECT is_tag_sticky FROM discussions LIMIT 0');
-        $this->assertTrue(true);
+        $this->send($this->request('GET', '/api'));
+
+        $this->assertTrue(
+            $this->database()->getSchemaBuilder()->hasColumn('discussions', 'is_tag_sticky')
+        );
     }
 
     /** @test */
     public function discussion_sticky_tag_table_exists(): void
     {
-        $this->database()->statement('SELECT discussion_id, tag_id FROM discussion_sticky_tag LIMIT 0');
-        $this->assertTrue(true);
+        $this->send($this->request('GET', '/api'));
+
+        $this->assertTrue(
+            $this->database()->getSchemaBuilder()->hasTable('discussion_sticky_tag')
+        );
     }
 
     /** @test */
     public function migration_is_idempotent_when_columns_already_exist(): void
     {
+        $this->send($this->request('GET', '/api'));
+
         $schema = $this->database()->getSchemaBuilder();
 
         $this->assertTrue($schema->hasColumn('discussions', 'is_stickiest'));
@@ -72,6 +84,8 @@ class MigrationTest extends TestCase
     /** @test */
     public function existing_sticky_data_is_preserved_after_migration(): void
     {
+        $this->send($this->request('GET', '/api'));
+
         $this->database()->table('discussions')
             ->where('id', 1)
             ->update(['is_stickiest' => true, 'is_tag_sticky' => false]);
@@ -85,6 +99,8 @@ class MigrationTest extends TestCase
     /** @test */
     public function default_permissions_are_set_for_moderators(): void
     {
+        $this->send($this->request('GET', '/api'));
+
         $stickyPerm = $this->database()
             ->table('group_permission')
             ->where('group_id', 4)
