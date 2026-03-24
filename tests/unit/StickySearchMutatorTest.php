@@ -7,6 +7,7 @@ use Flarum\Search\SearchCriteria;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\Tags\Search\Filter\TagFilter;
 use Flarum\Tags\TagRepository;
+use Flarum\User\User;
 use HuseyinFiliz\Stickiest\Search\StickySearchMutator;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
@@ -14,6 +15,11 @@ use PHPUnit\Framework\TestCase;
 
 class StickySearchMutatorTest extends TestCase
 {
+    private function makeUser(): User
+    {
+        return $this->createMock(User::class);
+    }
+
     private function makeSettings(array $values = []): SettingsRepositoryInterface
     {
         $settings = $this->createMock(SettingsRepositoryInterface::class);
@@ -34,14 +40,7 @@ class StickySearchMutatorTest extends TestCase
 
     private function makeCriteria(array $filters = [], bool $sortIsDefault = true): SearchCriteria
     {
-        use Flarum\User\User;
-
-		private function makeUser(): User
-		{
-    		return $this->createMock(User::class);
-		}
-
-		$criteria = new SearchCriteria($this->makeUser(), [], $filters);
+        $criteria = new SearchCriteria($this->makeUser(), [], $filters);
         $criteria->sortIsDefault = $sortIsDefault;
 
         return $criteria;
@@ -74,7 +73,6 @@ class StickySearchMutatorTest extends TestCase
         $criteria = $this->makeCriteria([], false);
         [$state] = $this->makeState();
 
-        // getActiveFilters should never be called if sortIsDefault is false
         $state->expects($this->never())->method('getActiveFilters');
 
         $mutator($state, $criteria);
@@ -89,6 +87,7 @@ class StickySearchMutatorTest extends TestCase
         );
 
         $criteria = $this->makeCriteria();
+
         $baseQuery = $this->createMock(QueryBuilder::class);
         $baseQuery->orders = null;
 
@@ -113,7 +112,6 @@ class StickySearchMutatorTest extends TestCase
             $this->makeTagRepository(5)
         );
 
-        // Both string and array slug formats should work
         foreach (['general', ['general']] as $slug) {
             $criteria = $this->makeCriteria(['tag' => $slug]);
             [$state, $baseQuery, $eloquentQuery] = $this->makeState([$tagFilter]);
@@ -133,7 +131,6 @@ class StickySearchMutatorTest extends TestCase
         $tagFilter = $this->createMock(TagFilter::class);
         $repo = $this->makeTagRepository(3);
 
-        // Ensure getIdForSlug receives a string, not an array
         $repo->expects($this->once())
              ->method('getIdForSlug')
              ->with($this->isType('string'))
@@ -141,7 +138,7 @@ class StickySearchMutatorTest extends TestCase
 
         $mutator = new StickySearchMutator($this->makeSettings(), $repo);
 
-        $criteria = $this->makeCriteria(['tag' => ['general']]); // array format (beta8+)
+        $criteria = $this->makeCriteria(['tag' => ['general']]);
         [$state, $baseQuery, $eloquentQuery] = $this->makeState([$tagFilter]);
         $eloquentQuery->method('leftJoin')->willReturnSelf();
 
@@ -156,8 +153,8 @@ class StickySearchMutatorTest extends TestCase
             $this->makeTagRepository()
         );
 
-        $criteria = $this->makeCriteria(); // no tag filter
-        [$state, $baseQuery, $eloquentQuery] = $this->makeState([]); // no active filters
+        $criteria = $this->makeCriteria();
+        [$state, $baseQuery, $eloquentQuery] = $this->makeState([]);
 
         $eloquentQuery->method('where')->willReturnSelf();
 
@@ -195,7 +192,6 @@ class StickySearchMutatorTest extends TestCase
         $criteria = $this->makeCriteria();
         [$state, $baseQuery, $eloquentQuery] = $this->makeState([]);
 
-        // where() should NOT be called when show_tag_sticky_in_all = true
         $eloquentQuery->expects($this->never())->method('where');
 
         $mutator($state, $criteria);
