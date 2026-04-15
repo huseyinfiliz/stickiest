@@ -23,7 +23,7 @@
         "source": "https://github.com/huseyinfiliz/stickiest"
     },
     "require": {
-        "flarum/core": ">=1.2.0",
+        "flarum/core": "^1.2.0",
         "flarum/sticky": "^1.0.0",
         "flarum/tags": "^1.0.0"
     },

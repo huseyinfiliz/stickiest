@@ -23,11 +23,11 @@ return [
             "SHOW INDEX FROM `{$prefix}discussions` WHERE `Key_name` = '{$prefix}discussions_is_tag_sticky_created_at_index'"
         )) > 0;
 
-        $schema->table('discussions', function (Blueprint $table) use ($hasIndex1, $hasIndex2) {
-            if (!$hasIndex1) {
+        $schema->table('discussions', function (Blueprint $table) use ($schema, $hasIndex1, $hasIndex2) {
+            if (!$hasIndex1 && $schema->hasColumn('discussions', 'is_tag_sticky')) {
                 $table->index(['is_tag_sticky', 'last_posted_at']);
             }
-            if (!$hasIndex2) {
+            if (!$hasIndex2 && $schema->hasColumn('discussions', 'is_tag_sticky')) {
                 $table->index(['is_tag_sticky', 'created_at']);
             }
         });
@@ -45,11 +45,11 @@ return [
             "SHOW INDEX FROM `{$prefix}discussions` WHERE `Key_name` = '{$prefix}discussions_is_tag_sticky_created_at_index'"
         )) > 0;
 
-        $schema->table('discussions', function (Blueprint $table) use ($hasIndex1, $hasIndex2) {
-            if ($hasIndex1) {
+        $schema->table('discussions', function (Blueprint $table) use ($schema, $hasIndex1, $hasIndex2) {
+            if ($hasIndex1 && $schema->hasColumn('discussions', 'is_tag_sticky')) {
                 $table->dropIndex(['is_tag_sticky', 'last_posted_at']);
             }
-            if ($hasIndex2) {
+            if ($hasIndex2 && $schema->hasColumn('discussions', 'is_tag_sticky')) {
                 $table->dropIndex(['is_tag_sticky', 'created_at']);
             }
         });
