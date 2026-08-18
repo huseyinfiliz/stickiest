@@ -53,21 +53,24 @@ class PinStickiedDiscussionsToTop
                      * Pin tag stickied and stickied discussions to the top
                      * and pin super stickied ones to the uppermost no matter what.
                      */
-                    $tagSticky = clone $query;
-                    $tagSticky->where('is_tag_sticky', true);
+                    /*
+                     * Hide tag stickies that are not stickied in the tag being
+                     * viewed. This has to be a single SQL condition: cloning
+                     * $query and plucking ids inherits the limit/offset that
+                     * AbstractFilterer applies *before* filter mutators run, so
+                     * the exclusion list came back truncated and offset-shifted
+                     * (page 1 pinned the wrong discussions, page 2 repeated
+                     * page 1's rows).
+                     */
+                    $tagId = $this->tags->getIdForSlug($criteria->query['tag']);
 
-                    if ($tagSticky->count() > 0) {
-                        $tagId = $this->tags->getIdForSlug($criteria->query['tag']);
-
-                        if ($tagId) {
-                            $tagSticky->whereNotIn('discussions.id', function (Builder $q) use ($tagId) {
-                                $q->select('discussion_id')->from('discussion_sticky_tag')->where('tag_id', $tagId);
-                            });
-
-                            if ($tagSticky->count() > 0) {
-                                $query->whereNotIn('discussions.id', $tagSticky->pluck('discussions.id')->toArray());
-                            }
-                        }
+                    if ($tagId) {
+                        $query->where(function (Builder $q) use ($tagId) {
+                            $q->where('is_tag_sticky', false)
+                                ->orWhereIn('discussions.id', function (Builder $sub) use ($tagId) {
+                                    $sub->select('discussion_id')->from('discussion_sticky_tag')->where('tag_id', $tagId);
+                                });
+                        });
                     }
 
                     if (!is_array($query->orders)) {
