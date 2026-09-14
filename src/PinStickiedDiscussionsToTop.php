@@ -15,6 +15,7 @@ use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\Tags\Query\TagFilterGambit;
 use Flarum\Tags\TagRepository;
 use Illuminate\Database\Query\Builder;
+use Illuminate\Support\Arr;
 
 class PinStickiedDiscussionsToTop
 {
@@ -50,31 +51,36 @@ class PinStickiedDiscussionsToTop
                     /**
                      * Specific Tag.
                      *
-                     * Pin tag stickied and stickied discussions to the top
-                     * and pin super stickied ones to the uppermost no matter what.
+                     * Pin super stickied discussions uppermost, then discussions
+                     * stickied in THIS tag, then standard stickies.
+                     *
+                     * Discussions stickied in other tags are NOT hidden; they
+                     * are simply listed without pin ordering.
                      */
-                    $tagSticky = clone $query;
-                    $tagSticky->where('is_tag_sticky', true);
+                    $tagSlug = Arr::get($criteria->query, 'tag');
+                    if (is_array($tagSlug)) {
+                        $tagSlug = Arr::first($tagSlug) ?: null;
+                    }
 
-                    if ($tagSticky->count() > 0) {
-                        $tagId = $this->tags->getIdForSlug($criteria->query['tag']);
+                    $tagId = $tagSlug ? $this->tags->getIdForSlug((string) $tagSlug) : null;
 
-                        if ($tagId) {
-                            $tagSticky->whereNotIn('discussions.id', function (Builder $q) use ($tagId) {
-                                $q->select('discussion_id')->from('discussion_sticky_tag')->where('tag_id', $tagId);
-                            });
+                    if ($tagId) {
+                        $query->leftJoin('discussion_sticky_tag as dst', function ($join) use ($tagId) {
+                            $join->on('discussions.id', '=', 'dst.discussion_id')
+                                ->where('dst.tag_id', '=', $tagId);
+                        });
 
-                            if ($tagSticky->count() > 0) {
-                                $query->whereNotIn('discussions.id', $tagSticky->pluck('discussions.id')->toArray());
-                            }
+                        if (!is_array($query->orders)) {
+                            $query->orders = [];
                         }
-                    }
 
-                    if (!is_array($query->orders)) {
-                        $query->orders = [];
+                        array_unshift(
+                            $query->orders,
+                            ['column' => 'is_stickiest', 'direction' => 'desc'],
+                            ['column' => 'dst.tag_id', 'direction' => 'desc'],
+                            ['column' => 'is_sticky', 'direction' => 'desc']
+                        );
                     }
-
-                    array_unshift($query->orders, ['column' => 'is_stickiest', 'direction' => 'desc'], ['column' => 'is_tag_sticky', 'direction' => 'desc'], ['column' => 'is_sticky', 'direction' => 'desc']);
                 }
 
                 return;
@@ -88,11 +94,15 @@ class PinStickiedDiscussionsToTop
              * Tag stickies will be treated as they're non-sticky.
              */
             $displayTagSticky = (bool) $this->settings->get(
-                'huseyinfiliz-stickiest.display_tag_sticky'
+                'huseyinfiliz-stickiest.display_tag_sticky',
+                true
             );
 
             if (!$displayTagSticky) {
-                $query->where('is_tag_sticky', false);
+                $query->where(function ($q) {
+                    $q->where('is_tag_sticky', false)
+                        ->orWhere('is_stickiest', true);
+                });
             }
 
             $sticky = clone $query;

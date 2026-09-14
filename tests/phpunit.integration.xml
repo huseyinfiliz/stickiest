@@ -7,6 +7,8 @@
 >
     <testsuites>
         <testsuite name="Stickiest Integration Tests">
+            <directory suffix="Test.php">./api</directory>
+            <directory suffix="Test.php">./migration</directory>
             <directory suffix="Test.php">./integration</directory>
         </testsuite>
     </testsuites>
