@@ -64,7 +64,7 @@ class PinStickiedDiscussionsToTopTest extends TestCase
     }
 
     /** @test */
-    public function it_skips_when_sort_is_not_default(): void
+    public function test_it_skips_when_sort_is_not_default(): void
     {
         $pin = new PinStickiedDiscussionsToTop(
             $this->makeSettings(),
@@ -80,7 +80,7 @@ class PinStickiedDiscussionsToTopTest extends TestCase
     }
 
     /** @test */
-    public function it_pins_super_stickies_and_tag_stickies_on_tag_page(): void
+    public function test_it_pins_super_stickies_and_tag_stickies_on_tag_page(): void
     {
         $tagFilter = $this->createMock(TagFilterGambit::class);
         $pin = new PinStickiedDiscussionsToTop(
@@ -114,7 +114,7 @@ class PinStickiedDiscussionsToTopTest extends TestCase
     }
 
     /** @test */
-    public function it_handles_tag_criteria_without_slug(): void
+    public function test_it_handles_tag_criteria_without_slug(): void
     {
         $tagFilter = $this->createMock(TagFilterGambit::class);
         $pin = new PinStickiedDiscussionsToTop(
@@ -131,7 +131,7 @@ class PinStickiedDiscussionsToTopTest extends TestCase
     }
 
     /** @test */
-    public function it_preserves_existing_orders_when_prepending_sticky_orders(): void
+    public function test_it_preserves_existing_orders_when_prepending_sticky_orders(): void
     {
         $tagFilter = $this->createMock(TagFilterGambit::class);
         $pin = new PinStickiedDiscussionsToTop(
@@ -159,7 +159,7 @@ class PinStickiedDiscussionsToTopTest extends TestCase
     }
 
     /** @test */
-    public function it_does_not_modify_query_for_multiple_active_filters(): void
+    public function test_it_does_not_modify_query_for_multiple_active_filters(): void
     {
         $tagFilter = $this->createMock(TagFilterGambit::class);
         $otherFilter = $this->createMock(FilterInterface::class);
@@ -178,7 +178,7 @@ class PinStickiedDiscussionsToTopTest extends TestCase
     }
 
     /** @test */
-    public function it_does_not_modify_query_for_non_tag_single_filter(): void
+    public function test_it_does_not_modify_query_for_non_tag_single_filter(): void
     {
         $otherFilter = $this->createMock(FilterInterface::class);
 
