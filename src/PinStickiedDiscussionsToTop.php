@@ -65,19 +65,21 @@ class PinStickiedDiscussionsToTop
                     $tagId = $tagSlug ? $this->tags->getIdForSlug((string) $tagSlug) : null;
 
                     if ($tagId) {
-                        $query->leftJoin('discussion_sticky_tag as dst', function ($join) use ($tagId) {
-                            $join->on('discussions.id', '=', 'dst.discussion_id')
-                                ->where('dst.tag_id', '=', $tagId);
+                        $query->leftJoin('discussion_sticky_tag', function ($join) use ($tagId) {
+                            $join->on('discussions.id', '=', 'discussion_sticky_tag.discussion_id')
+                                ->where('discussion_sticky_tag.tag_id', '=', $tagId);
                         });
 
                         if (!is_array($query->orders)) {
                             $query->orders = [];
                         }
 
+                        $prefix = $query->getConnection()->getTablePrefix();
+
                         array_unshift(
                             $query->orders,
                             ['column' => 'is_stickiest', 'direction' => 'desc'],
-                            ['column' => 'dst.tag_id', 'direction' => 'desc'],
+                            ['type' => 'Raw', 'sql' => "CASE WHEN {$prefix}discussion_sticky_tag.tag_id IS NOT NULL THEN 1 ELSE 0 END DESC"],
                             ['column' => 'is_sticky', 'direction' => 'desc']
                         );
                     }

@@ -17,6 +17,7 @@ use Flarum\Tags\Query\TagFilterGambit;
 use Flarum\Tags\TagRepository;
 use Flarum\User\User;
 use HuseyinFiliz\Stickiest\PinStickiedDiscussionsToTop;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Query\Builder;
 use PHPUnit\Framework\TestCase;
 
@@ -52,8 +53,12 @@ class PinStickiedDiscussionsToTopTest extends TestCase
 
     private function makeFilterState(array $activeFilters = []): array
     {
+        $connection = $this->createMock(Connection::class);
+        $connection->method('getTablePrefix')->willReturn('');
+
         $query = $this->createMock(Builder::class);
         $query->orders = null;
+        $query->method('getConnection')->willReturn($connection);
 
         $filterState = $this->createMock(FilterState::class);
         $filterState->method('getQuery')->willReturn($query);
@@ -94,7 +99,7 @@ class PinStickiedDiscussionsToTopTest extends TestCase
 
             $query->expects($this->once())
                 ->method('leftJoin')
-                ->with('discussion_sticky_tag as dst', $this->isType('callable'))
+                ->with('discussion_sticky_tag', $this->isType('callable'))
                 ->willReturnSelf();
 
             // Crucial: we do NOT call whereNotIn to hide discussions from unselected tags!
@@ -106,8 +111,8 @@ class PinStickiedDiscussionsToTopTest extends TestCase
             $this->assertIsArray($query->orders);
             $this->assertEquals('is_stickiest', $query->orders[0]['column']);
             $this->assertEquals('desc', $query->orders[0]['direction']);
-            $this->assertEquals('dst.tag_id', $query->orders[1]['column']);
-            $this->assertEquals('desc', $query->orders[1]['direction']);
+            $this->assertEquals('Raw', $query->orders[1]['type']);
+            $this->assertStringContainsString('discussion_sticky_tag.tag_id IS NOT NULL', $query->orders[1]['sql']);
             $this->assertEquals('is_sticky', $query->orders[2]['column']);
             $this->assertEquals('desc', $query->orders[2]['direction']);
         }
@@ -152,7 +157,8 @@ class PinStickiedDiscussionsToTopTest extends TestCase
 
         $this->assertCount(4, $query->orders);
         $this->assertEquals('is_stickiest', $query->orders[0]['column']);
-        $this->assertEquals('dst.tag_id', $query->orders[1]['column']);
+        $this->assertEquals('Raw', $query->orders[1]['type']);
+        $this->assertStringContainsString('discussion_sticky_tag.tag_id IS NOT NULL', $query->orders[1]['sql']);
         $this->assertEquals('is_sticky', $query->orders[2]['column']);
         $this->assertEquals('last_posted_at', $query->orders[3]['column']);
         $this->assertEquals('desc', $query->orders[3]['direction']);
