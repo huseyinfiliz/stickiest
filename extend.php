@@ -47,7 +47,10 @@ return [
 
     // API'ye attribute'lar ekle
     (new Extend\ApiResource(DiscussionResource::class))
-        ->fields(DiscussionAttributes::class),
+        ->fields(DiscussionAttributes::class)
+        ->endpoint('index', function (\Flarum\Api\Endpoint\Index $endpoint) {
+            return $endpoint->eagerLoad('stickyTags');
+        }),
 
     // İzinler
     (new Extend\Policy())
