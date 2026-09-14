@@ -43,16 +43,17 @@ class StickySearchMutator
             $tagId = $tagSlug ? $this->tags->getIdForSlug((string) $tagSlug) : null;
 
             if ($tagId) {
-                $query->leftJoin('discussion_sticky_tag as dst', function ($join) use ($tagId) {
-                    $join->on('discussions.id', '=', 'dst.discussion_id')
-                         ->where('dst.tag_id', '=', $tagId);
+                $query->leftJoin('discussion_sticky_tag', function ($join) use ($tagId) {
+                    $join->on('discussions.id', '=', 'discussion_sticky_tag.discussion_id')
+                         ->where('discussion_sticky_tag.tag_id', '=', $tagId);
                 });
 
                 $orders = $baseQuery->orders ?? [];
+                $prefix = $baseQuery->getConnection()->getTablePrefix();
 
                 $orderColumns = [
                     ['column' => 'is_stickiest', 'direction' => 'desc'],
-                    ['type' => 'Raw', 'sql' => 'CASE WHEN dst.tag_id IS NOT NULL THEN 1 ELSE 0 END DESC'],
+                    ['type' => 'Raw', 'sql' => "CASE WHEN {$prefix}discussion_sticky_tag.tag_id IS NOT NULL THEN 1 ELSE 0 END DESC"],
                 ];
 
                 if ($this->extensions && $this->extensions->isEnabled('flarum-sticky')) {

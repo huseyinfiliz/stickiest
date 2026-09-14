@@ -9,6 +9,7 @@ use Flarum\Tags\Search\Filter\TagFilter;
 use Flarum\Tags\TagRepository;
 use Flarum\User\User;
 use HuseyinFiliz\Stickiest\Search\StickySearchMutator;
+use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use PHPUnit\Framework\TestCase;
@@ -57,8 +58,12 @@ class StickySearchMutatorTest extends TestCase
 
     private function makeState(array $activeFilters = []): array
     {
+        $connection = $this->createMock(Connection::class);
+        $connection->method('getTablePrefix')->willReturn('');
+
         $baseQuery = $this->createMock(QueryBuilder::class);
         $baseQuery->orders = null;
+        $baseQuery->method('getConnection')->willReturn($connection);
 
         $eloquentQuery = $this->getMockBuilder(DummyEloquentBuilder::class)
             ->disableOriginalConstructor()
@@ -161,7 +166,7 @@ class StickySearchMutatorTest extends TestCase
         // Ensure leftJoin is called for the tag pivot
         $eloquentQuery->expects($this->once())
             ->method('leftJoin')
-            ->with('discussion_sticky_tag as dst', $this->isType('callable'))
+            ->with('discussion_sticky_tag', $this->isType('callable'))
             ->willReturnSelf();
 
         // Crucial: we must NEVER call where() on a tag page to exclude other tags' discussions!
@@ -172,7 +177,7 @@ class StickySearchMutatorTest extends TestCase
         $this->assertCount(4, $baseQuery->orders);
         $this->assertEquals('is_stickiest', $baseQuery->orders[0]['column']);
         $this->assertEquals('Raw', $baseQuery->orders[1]['type']);
-        $this->assertStringContainsString('dst.tag_id IS NOT NULL', $baseQuery->orders[1]['sql']);
+        $this->assertStringContainsString('discussion_sticky_tag.tag_id IS NOT NULL', $baseQuery->orders[1]['sql']);
         $this->assertEquals('is_sticky', $baseQuery->orders[2]['column']);
         $this->assertEquals('last_posted_at', $baseQuery->orders[3]['column']);
     }
