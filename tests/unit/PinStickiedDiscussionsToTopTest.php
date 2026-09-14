@@ -9,6 +9,7 @@
 
 namespace HuseyinFiliz\Stickiest\Tests\unit;
 
+use Flarum\Filter\FilterInterface;
 use Flarum\Filter\FilterState;
 use Flarum\Query\QueryCriteria;
 use Flarum\Settings\SettingsRepositoryInterface;
@@ -123,6 +124,71 @@ class PinStickiedDiscussionsToTopTest extends TestCase
 
         $criteria = $this->makeCriteria([]);
         [$filterState, $query] = $this->makeFilterState([$tagFilter]);
+
+        $query->expects($this->never())->method('leftJoin');
+
+        $pin($filterState, $criteria);
+    }
+
+    /** @test */
+    public function it_preserves_existing_orders_when_prepending_sticky_orders(): void
+    {
+        $tagFilter = $this->createMock(TagFilterGambit::class);
+        $pin = new PinStickiedDiscussionsToTop(
+            $this->makeSettings(),
+            $this->makeTagRepository(10)
+        );
+
+        $criteria = $this->makeCriteria(['tag' => 'announcements']);
+        [$filterState, $query] = $this->makeFilterState([$tagFilter]);
+
+        $query->orders = [
+            ['column' => 'last_posted_at', 'direction' => 'desc']
+        ];
+
+        $query->method('leftJoin')->willReturnSelf();
+
+        $pin($filterState, $criteria);
+
+        $this->assertCount(4, $query->orders);
+        $this->assertEquals('is_stickiest', $query->orders[0]['column']);
+        $this->assertEquals('dst.tag_id', $query->orders[1]['column']);
+        $this->assertEquals('is_sticky', $query->orders[2]['column']);
+        $this->assertEquals('last_posted_at', $query->orders[3]['column']);
+        $this->assertEquals('desc', $query->orders[3]['direction']);
+    }
+
+    /** @test */
+    public function it_does_not_modify_query_for_multiple_active_filters(): void
+    {
+        $tagFilter = $this->createMock(TagFilterGambit::class);
+        $otherFilter = $this->createMock(FilterInterface::class);
+
+        $pin = new PinStickiedDiscussionsToTop(
+            $this->makeSettings(),
+            $this->makeTagRepository(1)
+        );
+
+        $criteria = $this->makeCriteria(['tag' => 'general']);
+        [$filterState, $query] = $this->makeFilterState([$tagFilter, $otherFilter]);
+
+        $query->expects($this->never())->method('leftJoin');
+
+        $pin($filterState, $criteria);
+    }
+
+    /** @test */
+    public function it_does_not_modify_query_for_non_tag_single_filter(): void
+    {
+        $otherFilter = $this->createMock(FilterInterface::class);
+
+        $pin = new PinStickiedDiscussionsToTop(
+            $this->makeSettings(),
+            $this->makeTagRepository(1)
+        );
+
+        $criteria = $this->makeCriteria(['tag' => 'general']);
+        [$filterState, $query] = $this->makeFilterState([$otherFilter]);
 
         $query->expects($this->never())->method('leftJoin');
 
