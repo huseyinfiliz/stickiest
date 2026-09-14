@@ -13,6 +13,14 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
 use PHPUnit\Framework\TestCase;
 
+abstract class DummyEloquentBuilder extends Builder
+{
+    public function leftJoin($table, $first = null, $operator = null, $second = null)
+    {
+        return $this;
+    }
+}
+
 class StickySearchMutatorTest extends TestCase
 {
     private function makeUser(): User
@@ -52,10 +60,9 @@ class StickySearchMutatorTest extends TestCase
         $baseQuery = $this->createMock(QueryBuilder::class);
         $baseQuery->orders = null;
 
-        $eloquentQuery = $this->getMockBuilder(Builder::class)
+        $eloquentQuery = $this->getMockBuilder(DummyEloquentBuilder::class)
             ->disableOriginalConstructor()
-            ->addMethods(['leftJoin'])
-            ->onlyMethods(['getQuery', 'where'])
+            ->onlyMethods(['getQuery', 'where', 'leftJoin'])
             ->getMock();
         $eloquentQuery->method('getQuery')->willReturn($baseQuery);
         $eloquentQuery->method('leftJoin')->willReturnSelf();
