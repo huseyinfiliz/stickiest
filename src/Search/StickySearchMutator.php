@@ -2,6 +2,7 @@
 
 namespace HuseyinFiliz\Stickiest\Search;
 
+use Flarum\Extension\ExtensionManager;
 use Flarum\Search\Database\DatabaseSearchState;
 use Flarum\Search\SearchCriteria;
 use Flarum\Settings\SettingsRepositoryInterface;
@@ -13,7 +14,8 @@ class StickySearchMutator
 {
     public function __construct(
         protected SettingsRepositoryInterface $settings,
-        protected TagRepository $tags
+        protected TagRepository $tags,
+        protected ?ExtensionManager $extensions = null
     ) {}
 
     public function __invoke(DatabaseSearchState $state, SearchCriteria $criteria): void
@@ -48,11 +50,16 @@ class StickySearchMutator
 
                 $orders = $baseQuery->orders ?? [];
 
-                array_unshift($orders,
+                $orderColumns = [
                     ['column' => 'is_stickiest', 'direction' => 'desc'],
                     ['column' => 'dst.tag_id', 'direction' => 'desc'],
-                    ['column' => 'is_sticky', 'direction' => 'desc']
-                );
+                ];
+
+                if ($this->extensions && $this->extensions->isEnabled('flarum-sticky')) {
+                    $orderColumns[] = ['column' => 'is_sticky', 'direction' => 'desc'];
+                }
+
+                array_unshift($orders, ...$orderColumns);
 
                 $baseQuery->orders = $orders;
             }

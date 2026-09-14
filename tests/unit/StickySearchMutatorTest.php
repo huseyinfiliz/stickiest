@@ -142,10 +142,13 @@ class StickySearchMutatorTest extends TestCase
     public function test_it_applies_full_tag_sticky_ordering_hierarchy_without_filtering(): void
     {
         $tagFilter = $this->createMock(TagFilter::class);
+        $extensions = $this->createMock(\Flarum\Extension\ExtensionManager::class);
+        $extensions->method('isEnabled')->with('flarum-sticky')->willReturn(true);
 
         $mutator = new StickySearchMutator(
             $this->makeSettings(),
-            $this->makeTagRepository(5)
+            $this->makeTagRepository(5),
+            $extensions
         );
 
         $criteria = $this->makeCriteria(['tag' => 'general']);
