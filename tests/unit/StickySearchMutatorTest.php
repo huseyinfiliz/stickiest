@@ -132,6 +132,41 @@ class StickySearchMutatorTest extends TestCase
     }
 
     /** @test */
+    public function it_applies_full_tag_sticky_ordering_hierarchy_without_filtering(): void
+    {
+        $tagFilter = $this->createMock(TagFilter::class);
+
+        $mutator = new StickySearchMutator(
+            $this->makeSettings(),
+            $this->makeTagRepository(5)
+        );
+
+        $criteria = $this->makeCriteria(['tag' => 'general']);
+        [$state, $baseQuery, $eloquentQuery] = $this->makeState([$tagFilter]);
+
+        $baseQuery->orders = [
+            ['column' => 'last_posted_at', 'direction' => 'desc']
+        ];
+
+        // Ensure leftJoin is called for the tag pivot
+        $eloquentQuery->expects($this->once())
+            ->method('leftJoin')
+            ->with('discussion_sticky_tag as dst', $this->isType('callable'))
+            ->willReturnSelf();
+
+        // Crucial: we must NEVER call where() on a tag page to exclude other tags' discussions!
+        $eloquentQuery->expects($this->never())->method('where');
+
+        $mutator($state, $criteria);
+
+        $this->assertCount(4, $baseQuery->orders);
+        $this->assertEquals('is_stickiest', $baseQuery->orders[0]['column']);
+        $this->assertEquals('dst.tag_id', $baseQuery->orders[1]['column']);
+        $this->assertEquals('is_sticky', $baseQuery->orders[2]['column']);
+        $this->assertEquals('last_posted_at', $baseQuery->orders[3]['column']);
+    }
+
+    /** @test */
     public function it_handles_array_tag_filter_without_type_error(): void
     {
         $tagFilter = $this->createMock(TagFilter::class);
