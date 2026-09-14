@@ -171,7 +171,8 @@ class StickySearchMutatorTest extends TestCase
 
         $this->assertCount(4, $baseQuery->orders);
         $this->assertEquals('is_stickiest', $baseQuery->orders[0]['column']);
-        $this->assertEquals('dst.tag_id', $baseQuery->orders[1]['column']);
+        $this->assertEquals('Raw', $baseQuery->orders[1]['type']);
+        $this->assertStringContainsString('dst.tag_id IS NOT NULL', $baseQuery->orders[1]['sql']);
         $this->assertEquals('is_sticky', $baseQuery->orders[2]['column']);
         $this->assertEquals('last_posted_at', $baseQuery->orders[3]['column']);
     }

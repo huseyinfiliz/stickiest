@@ -52,7 +52,7 @@ class StickySearchMutator
 
                 $orderColumns = [
                     ['column' => 'is_stickiest', 'direction' => 'desc'],
-                    ['column' => 'dst.tag_id', 'direction' => 'desc'],
+                    ['type' => 'Raw', 'sql' => 'CASE WHEN dst.tag_id IS NOT NULL THEN 1 ELSE 0 END DESC'],
                 ];
 
                 if ($this->extensions && $this->extensions->isEnabled('flarum-sticky')) {
