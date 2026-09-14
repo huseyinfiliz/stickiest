@@ -69,7 +69,7 @@ class StickySearchMutatorTest extends TestCase
     }
 
     /** @test */
-    public function it_skips_non_default_sort(): void
+    public function test_it_skips_non_default_sort(): void
     {
         $mutator = new StickySearchMutator(
             $this->makeSettings(),
@@ -85,7 +85,7 @@ class StickySearchMutatorTest extends TestCase
     }
 
     /** @test */
-    public function it_skips_fulltext_search(): void
+    public function test_it_skips_fulltext_search(): void
     {
         $mutator = new StickySearchMutator(
             $this->makeSettings(),
@@ -109,7 +109,7 @@ class StickySearchMutatorTest extends TestCase
     }
 
     /** @test */
-    public function it_detects_tag_page_via_active_filters(): void
+    public function test_it_detects_tag_page_via_active_filters(): void
     {
         $tagFilter = $this->createMock(TagFilter::class);
 
@@ -132,7 +132,7 @@ class StickySearchMutatorTest extends TestCase
     }
 
     /** @test */
-    public function it_applies_full_tag_sticky_ordering_hierarchy_without_filtering(): void
+    public function test_it_applies_full_tag_sticky_ordering_hierarchy_without_filtering(): void
     {
         $tagFilter = $this->createMock(TagFilter::class);
 
@@ -167,7 +167,7 @@ class StickySearchMutatorTest extends TestCase
     }
 
     /** @test */
-    public function it_handles_array_tag_filter_without_type_error(): void
+    public function test_it_handles_array_tag_filter_without_type_error(): void
     {
         $tagFilter = $this->createMock(TagFilter::class);
         $repo = $this->makeTagRepository(3);
@@ -187,7 +187,7 @@ class StickySearchMutatorTest extends TestCase
     }
 
     /** @test */
-    public function it_prepends_stickiest_order_on_all_discussions(): void
+    public function test_it_prepends_stickiest_order_on_all_discussions(): void
     {
         $mutator = new StickySearchMutator(
             $this->makeSettings(),
@@ -207,7 +207,7 @@ class StickySearchMutatorTest extends TestCase
     }
 
     /** @test */
-    public function it_hides_tag_stickies_in_all_discussions_when_setting_disabled(): void
+    public function test_it_hides_tag_stickies_in_all_discussions_when_setting_disabled(): void
     {
         $mutator = new StickySearchMutator(
             $this->makeSettings(['huseyinfiliz-stickiest.show_tag_sticky_in_all' => false]),
@@ -223,7 +223,7 @@ class StickySearchMutatorTest extends TestCase
     }
 
     /** @test */
-    public function it_skips_tag_sticky_filter_when_show_all_setting_enabled(): void
+    public function test_it_skips_tag_sticky_filter_when_show_all_setting_enabled(): void
     {
         $mutator = new StickySearchMutator(
             $this->makeSettings(['huseyinfiliz-stickiest.show_tag_sticky_in_all' => true]),

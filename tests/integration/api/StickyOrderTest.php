@@ -87,7 +87,7 @@ class StickyOrderTest extends TestCase
     }
 
     /** @test */
-    public function super_sticky_appears_first_in_all_discussions(): void
+    public function test_super_sticky_appears_first_in_all_discussions(): void
     {
         $response = $this->send(
             $this->request('GET', '/api/discussions')
@@ -102,7 +102,7 @@ class StickyOrderTest extends TestCase
     }
 
     /** @test */
-    public function tag_sticky_hidden_in_all_discussions_when_setting_off(): void
+    public function test_tag_sticky_hidden_in_all_discussions_when_setting_off(): void
     {
         $this->setting('huseyinfiliz-stickiest.show_tag_sticky_in_all', '0');
 
@@ -119,7 +119,7 @@ class StickyOrderTest extends TestCase
     }
 
     /** @test */
-    public function tag_sticky_shown_in_all_discussions_when_setting_on(): void
+    public function test_tag_sticky_shown_in_all_discussions_when_setting_on(): void
     {
         $this->setting('huseyinfiliz-stickiest.show_tag_sticky_in_all', '1');
 
@@ -136,7 +136,7 @@ class StickyOrderTest extends TestCase
     }
 
     /** @test */
-    public function super_sticky_always_shown_even_when_tag_sticky_filter_is_on(): void
+    public function test_super_sticky_always_shown_even_when_tag_sticky_filter_is_on(): void
     {
         $this->setting('huseyinfiliz-stickiest.show_tag_sticky_in_all', '0');
 

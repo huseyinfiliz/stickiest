@@ -184,7 +184,7 @@ class TagStickyRegressionTest extends TestCase
      *
      * @test
      */
-    public function discussion_sticky_in_one_tag_is_not_hidden_in_other_primary_tags(): void
+    public function test_discussion_sticky_in_one_tag_is_not_hidden_in_other_primary_tags(): void
     {
         // View Tag B: Discussion 100 is NOT stickied in Tag B, but belongs to Tag B
         $tagBIds = $this->getDiscussionIds('tag-b', 50);
@@ -208,7 +208,7 @@ class TagStickyRegressionTest extends TestCase
      *
      * @test
      */
-    public function sticky_behavior_with_multiple_primary_tags(): void
+    public function test_sticky_behavior_with_multiple_primary_tags(): void
     {
         $tagAIds = $this->getDiscussionIds('tag-a', 50);
         $tagBIds = $this->getDiscussionIds('tag-b', 50);
@@ -233,9 +233,9 @@ class TagStickyRegressionTest extends TestCase
      *
      * @test
      */
-    public function pagination_limit_and_offset_prevents_lost_or_duplicated_discussions(): void
+    public function test_pagination_limit_and_offset_prevents_lost_or_duplicated_discussions(): void
     {
-        // Tag A has 25 plain + 4 special = 29 discussions total
+        // Tag A has 25 plain + 3 special = 28 discussions total
         $page1 = $this->getDiscussionIds('tag-a', 10, 0);
         $page2 = $this->getDiscussionIds('tag-a', 10, 10);
         $page3 = $this->getDiscussionIds('tag-a', 10, 20);
@@ -270,7 +270,7 @@ class TagStickyRegressionTest extends TestCase
      *
      * @test
      */
-    public function multiple_sticky_discussions_are_ordered_correctly(): void
+    public function test_multiple_sticky_discussions_are_ordered_correctly(): void
     {
         $ids = $this->getDiscussionIds('tag-a', 10);
 
@@ -292,7 +292,7 @@ class TagStickyRegressionTest extends TestCase
      *
      * @test
      */
-    public function unsticky_operation_restores_natural_sorting(): void
+    public function test_unsticky_operation_restores_natural_sorting(): void
     {
         // Unsupersticky Discussion 102
         $response = $this->send(

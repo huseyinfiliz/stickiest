@@ -69,7 +69,7 @@ class StickyApiTest extends TestCase
     }
 
     /** @test */
-    public function guest_can_see_discussion_attributes(): void
+    public function test_guest_can_see_discussion_attributes(): void
     {
         $response = $this->send(
             $this->request('GET', '/api/discussions/2')
@@ -87,7 +87,7 @@ class StickyApiTest extends TestCase
     }
 
     /** @test */
-    public function guest_cannot_sticky_discussion(): void
+    public function test_guest_cannot_sticky_discussion(): void
     {
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/1', [
@@ -105,7 +105,7 @@ class StickyApiTest extends TestCase
     }
 
     /** @test */
-    public function normal_user_cannot_super_sticky_discussion(): void
+    public function test_normal_user_cannot_super_sticky_discussion(): void
     {
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/1', [
@@ -124,7 +124,7 @@ class StickyApiTest extends TestCase
     }
 
     /** @test */
-    public function moderator_can_super_sticky_discussion(): void
+    public function test_moderator_can_super_sticky_discussion(): void
     {
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/1', [
@@ -146,7 +146,7 @@ class StickyApiTest extends TestCase
     }
 
     /** @test */
-    public function moderator_can_remove_super_sticky(): void
+    public function test_moderator_can_remove_super_sticky(): void
     {
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/2', [
@@ -168,7 +168,7 @@ class StickyApiTest extends TestCase
     }
 
     /** @test */
-    public function moderator_can_tag_sticky_discussion(): void
+    public function test_moderator_can_tag_sticky_discussion(): void
     {
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/1', [
@@ -190,7 +190,7 @@ class StickyApiTest extends TestCase
     }
 
     /** @test */
-    public function normal_user_cannot_tag_sticky_discussion(): void
+    public function test_normal_user_cannot_tag_sticky_discussion(): void
     {
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/1', [
@@ -209,7 +209,7 @@ class StickyApiTest extends TestCase
     }
 
     /** @test */
-    public function moderator_sees_can_sticky_as_true(): void
+    public function test_moderator_sees_can_sticky_as_true(): void
     {
         $response = $this->send(
             $this->request('GET', '/api/discussions/1', [
@@ -227,7 +227,7 @@ class StickyApiTest extends TestCase
     }
 
     /** @test */
-    public function normal_user_sees_can_sticky_as_false(): void
+    public function test_normal_user_sees_can_sticky_as_false(): void
     {
         $response = $this->send(
             $this->request('GET', '/api/discussions/1', [

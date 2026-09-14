@@ -39,7 +39,7 @@ class MigrationTest extends TestCase
     }
 
     /** @test */
-    public function is_stickiest_column_exists(): void
+    public function test_is_stickiest_column_exists(): void
     {
         // Boot the app (runs migrations) by sending a request first
         $this->send($this->request('GET', '/api'));
@@ -50,7 +50,7 @@ class MigrationTest extends TestCase
     }
 
     /** @test */
-    public function is_tag_sticky_column_exists(): void
+    public function test_is_tag_sticky_column_exists(): void
     {
         $this->send($this->request('GET', '/api'));
 
@@ -60,7 +60,7 @@ class MigrationTest extends TestCase
     }
 
     /** @test */
-    public function discussion_sticky_tag_table_exists(): void
+    public function test_discussion_sticky_tag_table_exists(): void
     {
         $this->send($this->request('GET', '/api'));
 
@@ -70,7 +70,7 @@ class MigrationTest extends TestCase
     }
 
     /** @test */
-    public function migration_is_idempotent_when_columns_already_exist(): void
+    public function test_migration_is_idempotent_when_columns_already_exist(): void
     {
         $this->send($this->request('GET', '/api'));
 
@@ -82,7 +82,7 @@ class MigrationTest extends TestCase
     }
 
     /** @test */
-    public function existing_sticky_data_is_preserved_after_migration(): void
+    public function test_existing_sticky_data_is_preserved_after_migration(): void
     {
         $this->send($this->request('GET', '/api'));
 
@@ -97,7 +97,7 @@ class MigrationTest extends TestCase
     }
 
     /** @test */
-    public function default_permissions_are_set_for_moderators(): void
+    public function test_default_permissions_are_set_for_moderators(): void
     {
         $this->send($this->request('GET', '/api'));
 
