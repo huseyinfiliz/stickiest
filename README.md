@@ -14,6 +14,7 @@ This extension allows you to stick, super-stick, or tag-stick discussions to the
 - **Event Posts**: Shows activity when super sticky status changes
 - **Customizable Badge**: Choose your own icon for super sticky discussions
 - **Visual Indicators**: Colored borders and backgrounds for sticky discussions
+- **Audit Log**: Optional `flarum/audit` integration records super sticky and tag sticky changes, including previous and new tag selections
 
 ## Screenshots
 
@@ -25,7 +26,7 @@ This extension allows you to stick, super-stick, or tag-stick discussions to the
 ## Requirements
 
 - Flarum 2.0+
-- PHP 8.2+
+- PHP 8.3+
 - [flarum/tags](https://github.com/flarum/tags) extension
 
 ## Installation
@@ -76,6 +77,34 @@ php flarum cache:clear
 |---------|-------------|
 | Show tag stickies in All Discussions | When disabled, tag sticky discussions only appear in their respective tag pages |
 | Super sticky badge icon | Font Awesome icon class (default: `fas fa-star`) |
+
+## Development
+
+Frontend tooling requires Node.js 24+ and Yarn 4 (the version is pinned in `js/package.json`).
+
+```bash
+composer install
+cd js
+corepack yarn install --immutable
+corepack yarn test --runInBand
+corepack yarn check-typings
+corepack yarn build
+```
+
+From the repository root, prepare a dedicated test installation and run the PHP checks:
+
+```bash
+DB_DRIVER=sqlite FLARUM_TEST_TMP_DIR_LOCAL=tests/integration/tmp composer test:setup
+FLARUM_TEST_TMP_DIR_LOCAL=tests/integration/tmp composer test
+composer analyse:phpstan
+```
+
+The setup command resets its test database. Never point it at a forum database.
+CI also tests MySQL, MariaDB, PostgreSQL and prefixed tables using Flarum's reusable workflow.
+
+Audit support is enabled automatically when `flarum/audit` is enabled. Its action
+toggles are grouped under Stickiest. Normal sticky actions remain owned by `flarum/sticky`.
+Only English source strings are shipped; translations belong in Flarum language packs.
 
 ## Links
 

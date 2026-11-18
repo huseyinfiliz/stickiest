@@ -11,3 +11,7 @@ tests/.phpunit.result.cache
 .idea/*
 .vscode
 js/coverage-ts
+js/coverage/
+js/dist-typings/
+js/.yarn
+js/package-lock.json
