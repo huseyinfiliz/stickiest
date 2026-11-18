@@ -10,5 +10,6 @@ class DiscussionWasUnstickiest
     public function __construct(
         public Discussion $discussion,
         public User $actor
-    ) {}
+    ) {
+    }
 }

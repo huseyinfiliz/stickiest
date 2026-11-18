@@ -18,9 +18,9 @@ use Flarum\Extend;
 use Flarum\Search\Database\DatabaseSearchDriver;
 use Flarum\Tags\Tag;
 use HuseyinFiliz\Stickiest\Access\DiscussionPolicy;
+use HuseyinFiliz\Stickiest\Event\DiscussionTagStickyStateChanged;
 use HuseyinFiliz\Stickiest\Event\DiscussionWasStickiest;
 use HuseyinFiliz\Stickiest\Event\DiscussionWasUnstickiest;
-use HuseyinFiliz\Stickiest\Event\DiscussionTagStickyStateChanged;
 use HuseyinFiliz\Stickiest\Listener\CreatePostWhenStickiest;
 use HuseyinFiliz\Stickiest\Listener\CreatePostWhenUnstickiest;
 use HuseyinFiliz\Stickiest\Listener\SaveStickyState;
@@ -73,12 +73,12 @@ return [
                 ->group('huseyinfiliz-stickiest')
                 ->listen(DiscussionWasStickiest::class, 'discussion.super_stickied', fn ($event) => ['discussion_id' => $event->discussion->id])
                 ->listen(DiscussionWasUnstickiest::class, 'discussion.super_unstickied', fn ($event) => ['discussion_id' => $event->discussion->id])
-                ->listen(DiscussionTagStickyStateChanged::class, 'discussion.tag_stickied', fn ($event) => !$event->wasTagSticky && $event->isTagSticky ? [
+                ->listen(DiscussionTagStickyStateChanged::class, 'discussion.tag_stickied', fn ($event) => ! $event->wasTagSticky && $event->isTagSticky ? [
                     'discussion_id' => $event->discussion->id,
                     'old_tag_ids' => $event->oldTagIds,
                     'new_tag_ids' => $event->newTagIds,
                 ] : null)
-                ->listen(DiscussionTagStickyStateChanged::class, 'discussion.tag_unstickied', fn ($event) => $event->wasTagSticky && !$event->isTagSticky ? [
+                ->listen(DiscussionTagStickyStateChanged::class, 'discussion.tag_unstickied', fn ($event) => $event->wasTagSticky && ! $event->isTagSticky ? [
                     'discussion_id' => $event->discussion->id,
                     'old_tag_ids' => $event->oldTagIds,
                     'new_tag_ids' => $event->newTagIds,

@@ -12,7 +12,9 @@ use HuseyinFiliz\Stickiest\Event\DiscussionWasUnstickiest;
 
 class DiscussionAttributes
 {
-    public function __construct(protected TranslatorInterface $translator) {}
+    public function __construct(protected TranslatorInterface $translator)
+    {
+    }
 
     public function __invoke(): array
     {
@@ -23,7 +25,7 @@ class DiscussionAttributes
                 ->set(function (Discussion $discussion, bool $value, Context $context) {
                     $wasStickiest = (bool) $discussion->getAttribute('is_stickiest');
                     $discussion->setAttribute('is_stickiest', $value);
-                    
+
                     if ($value !== $wasStickiest) {
                         $actor = $context->getActor();
                         $discussion->afterSave(function ($discussion) use ($actor, $value) {
@@ -63,7 +65,7 @@ class DiscussionAttributes
     /** @return list<int> */
     private function validateTagIds(Discussion $discussion, mixed $value): array
     {
-        if (!is_array($value) || !array_is_list($value)
+        if (! is_array($value) || ! array_is_list($value)
             || count(array_filter($value, fn ($id) => is_int($id) && $id > 0)) !== count($value)
             || count(array_unique($value, SORT_REGULAR)) !== count($value)) {
             throw new ValidationException(['stickyTagIds' => $this->translator->trans('huseyinfiliz-stickiest.validation.invalid_tag_ids')]);

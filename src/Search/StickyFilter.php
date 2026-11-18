@@ -18,6 +18,6 @@ class StickyFilter implements FilterInterface
 
     public function filter(SearchState $state, string|array $value, bool $negate): void
     {
-        $state->getQuery()->where('is_stickiest', !$negate);
+        $state->getQuery()->where('is_stickiest', ! $negate);
     }
 }

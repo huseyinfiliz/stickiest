@@ -21,37 +21,37 @@ class StickyApiTest extends TestCase
             'users' => [
                 $this->normalUser(),
                 [
-                    'id'                 => 3,
-                    'username'           => 'moderator',
-                    'email'              => 'mod@example.com',
-                    'password'           => '$2y$10$LO59tiT7uggl6Oe23o/O6uxy7CHhy3400ZBGl5bCAwtKEBF3UFKCO',
+                    'id' => 3,
+                    'username' => 'moderator',
+                    'email' => 'mod@example.com',
+                    'password' => '$2y$10$LO59tiT7uggl6Oe23o/O6uxy7CHhy3400ZBGl5bCAwtKEBF3UFKCO',
                     'is_email_confirmed' => 1,
                 ],
             ],
             'discussions' => [
                 [
-                    'id'             => 1,
-                    'title'          => 'Normal Discussion',
-                    'slug'           => 'normal-discussion',
-                    'created_at'     => Carbon::now()->toDateTimeString(),
+                    'id' => 1,
+                    'title' => 'Normal Discussion',
+                    'slug' => 'normal-discussion',
+                    'created_at' => Carbon::now()->toDateTimeString(),
                     'last_posted_at' => Carbon::now()->toDateTimeString(),
-                    'user_id'        => 1,
-                    'first_post_id'  => 1,
-                    'comment_count'  => 1,
-                    'is_stickiest'   => false,
-                    'is_tag_sticky'  => false,
+                    'user_id' => 1,
+                    'first_post_id' => 1,
+                    'comment_count' => 1,
+                    'is_stickiest' => false,
+                    'is_tag_sticky' => false,
                 ],
                 [
-                    'id'             => 2,
-                    'title'          => 'Super Sticky Discussion',
-                    'slug'           => 'super-sticky-discussion',
-                    'created_at'     => Carbon::now()->toDateTimeString(),
+                    'id' => 2,
+                    'title' => 'Super Sticky Discussion',
+                    'slug' => 'super-sticky-discussion',
+                    'created_at' => Carbon::now()->toDateTimeString(),
                     'last_posted_at' => Carbon::now()->toDateTimeString(),
-                    'user_id'        => 1,
-                    'first_post_id'  => 2,
-                    'comment_count'  => 1,
-                    'is_stickiest'   => true,
-                    'is_tag_sticky'  => false,
+                    'user_id' => 1,
+                    'first_post_id' => 2,
+                    'comment_count' => 1,
+                    'is_stickiest' => true,
+                    'is_tag_sticky' => false,
                 ],
             ],
             'posts' => [
@@ -77,7 +77,7 @@ class StickyApiTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $body  = json_decode($response->getBody()->getContents(), true);
+        $body = json_decode($response->getBody()->getContents(), true);
         $attrs = $body['data']['attributes'];
 
         $this->assertTrue($attrs['isStickiest']);
@@ -93,8 +93,8 @@ class StickyApiTest extends TestCase
             $this->request('PATCH', '/api/discussions/1', [
                 'json' => [
                     'data' => [
-                        'type'       => 'discussions',
-                        'id'         => '1',
+                        'type' => 'discussions',
+                        'id' => '1',
                         'attributes' => ['isStickiest' => true],
                     ],
                 ],
@@ -110,10 +110,10 @@ class StickyApiTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/1', [
                 'authenticatedAs' => 2,
-                'json'            => [
+                'json' => [
                     'data' => [
-                        'type'       => 'discussions',
-                        'id'         => '1',
+                        'type' => 'discussions',
+                        'id' => '1',
                         'attributes' => ['isStickiest' => true],
                     ],
                 ],
@@ -129,10 +129,10 @@ class StickyApiTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/1', [
                 'authenticatedAs' => 3,
-                'json'            => [
+                'json' => [
                     'data' => [
-                        'type'       => 'discussions',
-                        'id'         => '1',
+                        'type' => 'discussions',
+                        'id' => '1',
                         'attributes' => ['isStickiest' => true],
                     ],
                 ],
@@ -151,10 +151,10 @@ class StickyApiTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/2', [
                 'authenticatedAs' => 3,
-                'json'            => [
+                'json' => [
                     'data' => [
-                        'type'       => 'discussions',
-                        'id'         => '2',
+                        'type' => 'discussions',
+                        'id' => '2',
                         'attributes' => ['isStickiest' => false],
                     ],
                 ],
@@ -173,10 +173,10 @@ class StickyApiTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/1', [
                 'authenticatedAs' => 3,
-                'json'            => [
+                'json' => [
                     'data' => [
-                        'type'       => 'discussions',
-                        'id'         => '1',
+                        'type' => 'discussions',
+                        'id' => '1',
                         'attributes' => ['isTagSticky' => true, 'stickyTagIds' => []],
                     ],
                 ],
@@ -195,10 +195,10 @@ class StickyApiTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/1', [
                 'authenticatedAs' => 2,
-                'json'            => [
+                'json' => [
                     'data' => [
-                        'type'       => 'discussions',
-                        'id'         => '1',
+                        'type' => 'discussions',
+                        'id' => '1',
                         'attributes' => ['isTagSticky' => true],
                     ],
                 ],
@@ -219,7 +219,7 @@ class StickyApiTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $body  = json_decode($response->getBody()->getContents(), true);
+        $body = json_decode($response->getBody()->getContents(), true);
         $attrs = $body['data']['attributes'];
 
         $this->assertTrue($attrs['canStickiest']);
@@ -237,7 +237,7 @@ class StickyApiTest extends TestCase
 
         $this->assertEquals(200, $response->getStatusCode());
 
-        $body  = json_decode($response->getBody()->getContents(), true);
+        $body = json_decode($response->getBody()->getContents(), true);
         $attrs = $body['data']['attributes'];
 
         $this->assertFalse($attrs['canStickiest']);

@@ -20,7 +20,8 @@ class StickySearchMutator
         protected SlugManager $slugManager,
         protected DiscussionResource $discussions,
         protected ?ExtensionManager $extensions = null
-    ) {}
+    ) {
+    }
 
     public function __invoke(DatabaseSearchState $state, SearchCriteria $criteria): void
     {
@@ -32,7 +33,7 @@ class StickySearchMutator
         // Resolve optional marker interfaces by name to remain compatible with Flarum 2.0.
         $activeFilters = array_values(array_filter(
             $state->getActiveFilters(),
-            fn ($filter) => !is_a($filter, 'Flarum\Search\Filter\RefineFilterInterface')
+            fn ($filter) => ! is_a($filter, 'Flarum\Search\Filter\RefineFilterInterface')
                 || is_a($filter, 'Flarum\Search\Filter\WindowFilterInterface')
         ));
         $isTagPage = count($activeFilters) === 1 && $activeFilters[0] instanceof TagFilter;
@@ -44,7 +45,7 @@ class StickySearchMutator
             }
         }
 
-        if (!$criteria->sortIsDefault && !$this->sortIsTagDefault($tag, $criteria)) {
+        if (! $criteria->sortIsDefault && ! $this->sortIsTagDefault($tag, $criteria)) {
             return;
         }
 
@@ -79,7 +80,7 @@ class StickySearchMutator
             // All Discussions (or multi-filter / no-filter context)
             $showTagStickyInAll = (bool) $this->settings->get('huseyinfiliz-stickiest.show_tag_sticky_in_all', false);
 
-            if (!$showTagStickyInAll) {
+            if (! $showTagStickyInAll) {
                 $this->excludeTagStickies($baseQuery);
 
                 foreach ($baseQuery->unions ?? [] as $union) {
@@ -117,7 +118,7 @@ class StickySearchMutator
     {
         $slugs = (array) ($criteria->filters['tag'] ?? []);
 
-        if (count($slugs) !== 1 || !is_string($slug = reset($slugs)) || str_contains($slug, ',')) {
+        if (count($slugs) !== 1 || ! is_string($slug = reset($slugs)) || str_contains($slug, ',')) {
             return null;
         }
 
@@ -130,7 +131,7 @@ class StickySearchMutator
 
     private function sortIsTagDefault(?Tag $tag, SearchCriteria $criteria): bool
     {
-        if (!$tag || !$tag->default_sort || !($sort = $this->discussions->sortMap()[$tag->default_sort] ?? null)) {
+        if (! $tag || ! $tag->default_sort || ! ($sort = $this->discussions->sortMap()[$tag->default_sort] ?? null)) {
             return false;
         }
 

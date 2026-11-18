@@ -33,7 +33,9 @@ class StickySearchMutatorTest extends TestCase
         $extensions = $this->createStub(ExtensionManager::class);
         $extensions->method('isEnabled')->willReturn($coreSticky);
         $resource = new class extends DiscussionResource {
-            public function __construct() {}
+            public function __construct()
+            {
+            }
         };
 
         return new StickySearchMutator($repository, $slugs, $resource, $extensions);

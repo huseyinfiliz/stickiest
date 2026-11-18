@@ -11,16 +11,16 @@ class TagStickyRegressionTest extends TestCase
     use RetrievesAuthorizedUsers;
 
     /** Total number of plain regular discussions */
-    const PLAIN_COUNT = 25;
+    public const PLAIN_COUNT = 25;
 
     /** Multi-tag discussion, stickied ONLY in Tag A (tag 1) */
-    const STICKY_IN_TAG_A_ONLY = 100;
+    public const STICKY_IN_TAG_A_ONLY = 100;
 
     /** Multi-tag discussion, stickied in BOTH Tag A (1) and Tag B (2) */
-    const STICKY_IN_BOTH_TAGS = 101;
+    public const STICKY_IN_BOTH_TAGS = 101;
 
     /** Super sticky discussion (uppermost everywhere) */
-    const SUPER_STICKY = 102;
+    public const SUPER_STICKY = 102;
 
     protected function setUp(): void
     {
@@ -36,25 +36,25 @@ class TagStickyRegressionTest extends TestCase
         // Generate 25 plain discussions with descending dates (Discussion 1 newest, 25 oldest)
         for ($i = 1; $i <= self::PLAIN_COUNT; $i++) {
             $discussions[] = [
-                'id'             => $i,
-                'title'          => "Plain Discussion $i",
-                'slug'           => "plain-discussion-$i",
-                'created_at'     => Carbon::now()->subMinutes(100 + $i)->toDateTimeString(),
+                'id' => $i,
+                'title' => "Plain Discussion $i",
+                'slug' => "plain-discussion-$i",
+                'created_at' => Carbon::now()->subMinutes(100 + $i)->toDateTimeString(),
                 'last_posted_at' => Carbon::now()->subMinutes(100 + $i)->toDateTimeString(),
-                'user_id'        => 1,
-                'first_post_id'  => $i,
-                'comment_count'  => 1,
-                'is_stickiest'   => false,
-                'is_tag_sticky'  => false,
+                'user_id' => 1,
+                'first_post_id' => $i,
+                'comment_count' => 1,
+                'is_stickiest' => false,
+                'is_tag_sticky' => false,
             ];
             $posts[] = [
-                'id'             => $i,
-                'number'         => 1,
-                'discussion_id'  => $i,
-                'created_at'     => Carbon::now()->subMinutes(100 + $i)->toDateTimeString(),
-                'user_id'        => 1,
-                'type'           => 'comment',
-                'content'        => "<t><p>Post $i</p></t>",
+                'id' => $i,
+                'number' => 1,
+                'discussion_id' => $i,
+                'created_at' => Carbon::now()->subMinutes(100 + $i)->toDateTimeString(),
+                'user_id' => 1,
+                'type' => 'comment',
+                'content' => "<t><p>Post $i</p></t>",
             ];
             $discussionTag[] = ['discussion_id' => $i, 'tag_id' => 1];
             $discussionTag[] = ['discussion_id' => $i, 'tag_id' => 2];
@@ -62,16 +62,16 @@ class TagStickyRegressionTest extends TestCase
 
         // 100: Tag sticky only in tag 1 (old date so natural position would be low)
         $discussions[] = [
-            'id'             => self::STICKY_IN_TAG_A_ONLY,
-            'title'          => 'Sticky in Tag A Only',
-            'slug'           => 'sticky-tag-a-only',
-            'created_at'     => Carbon::now()->subDays(5)->toDateTimeString(),
+            'id' => self::STICKY_IN_TAG_A_ONLY,
+            'title' => 'Sticky in Tag A Only',
+            'slug' => 'sticky-tag-a-only',
+            'created_at' => Carbon::now()->subDays(5)->toDateTimeString(),
             'last_posted_at' => Carbon::now()->subDays(5)->toDateTimeString(),
-            'user_id'        => 1,
-            'first_post_id'  => self::STICKY_IN_TAG_A_ONLY,
-            'comment_count'  => 1,
-            'is_stickiest'   => false,
-            'is_tag_sticky'  => true,
+            'user_id' => 1,
+            'first_post_id' => self::STICKY_IN_TAG_A_ONLY,
+            'comment_count' => 1,
+            'is_stickiest' => false,
+            'is_tag_sticky' => true,
         ];
         $posts[] = [
             'id' => self::STICKY_IN_TAG_A_ONLY, 'number' => 1, 'discussion_id' => self::STICKY_IN_TAG_A_ONLY,
@@ -83,16 +83,16 @@ class TagStickyRegressionTest extends TestCase
 
         // 101: Sticky in BOTH tag 1 and tag 2
         $discussions[] = [
-            'id'             => self::STICKY_IN_BOTH_TAGS,
-            'title'          => 'Sticky in Both Tags',
-            'slug'           => 'sticky-in-both-tags',
-            'created_at'     => Carbon::now()->subDays(4)->toDateTimeString(),
+            'id' => self::STICKY_IN_BOTH_TAGS,
+            'title' => 'Sticky in Both Tags',
+            'slug' => 'sticky-in-both-tags',
+            'created_at' => Carbon::now()->subDays(4)->toDateTimeString(),
             'last_posted_at' => Carbon::now()->subDays(4)->toDateTimeString(),
-            'user_id'        => 1,
-            'first_post_id'  => self::STICKY_IN_BOTH_TAGS,
-            'comment_count'  => 1,
-            'is_stickiest'   => false,
-            'is_tag_sticky'  => true,
+            'user_id' => 1,
+            'first_post_id' => self::STICKY_IN_BOTH_TAGS,
+            'comment_count' => 1,
+            'is_stickiest' => false,
+            'is_tag_sticky' => true,
         ];
         $posts[] = [
             'id' => self::STICKY_IN_BOTH_TAGS, 'number' => 1, 'discussion_id' => self::STICKY_IN_BOTH_TAGS,
@@ -104,16 +104,16 @@ class TagStickyRegressionTest extends TestCase
 
         // 102: Super sticky
         $discussions[] = [
-            'id'             => self::SUPER_STICKY,
-            'title'          => 'Super Sticky Everywhere',
-            'slug'           => 'super-sticky-everywhere',
-            'created_at'     => Carbon::now()->subDays(10)->toDateTimeString(),
+            'id' => self::SUPER_STICKY,
+            'title' => 'Super Sticky Everywhere',
+            'slug' => 'super-sticky-everywhere',
+            'created_at' => Carbon::now()->subDays(10)->toDateTimeString(),
             'last_posted_at' => Carbon::now()->subDays(10)->toDateTimeString(),
-            'user_id'        => 1,
-            'first_post_id'  => self::SUPER_STICKY,
-            'comment_count'  => 1,
-            'is_stickiest'   => true,
-            'is_tag_sticky'  => false,
+            'user_id' => 1,
+            'first_post_id' => self::SUPER_STICKY,
+            'comment_count' => 1,
+            'is_stickiest' => true,
+            'is_tag_sticky' => false,
         ];
         $posts[] = [
             'id' => self::SUPER_STICKY, 'number' => 1, 'discussion_id' => self::SUPER_STICKY,
@@ -127,10 +127,10 @@ class TagStickyRegressionTest extends TestCase
             'users' => [
                 $this->normalUser(),
                 [
-                    'id'                 => 3,
-                    'username'           => 'moderator',
-                    'email'              => 'mod@example.com',
-                    'password'           => '$2y$10$LO59tiT7uggl6Oe23o/O6uxy7CHhy3400ZBGl5bCAwtKEBF3UFKCO',
+                    'id' => 3,
+                    'username' => 'moderator',
+                    'email' => 'mod@example.com',
+                    'password' => '$2y$10$LO59tiT7uggl6Oe23o/O6uxy7CHhy3400ZBGl5bCAwtKEBF3UFKCO',
                     'is_email_confirmed' => 1,
                 ],
             ],
@@ -138,8 +138,8 @@ class TagStickyRegressionTest extends TestCase
                 ['id' => 1, 'name' => 'Tag A', 'slug' => 'tag-a', 'color' => '#f00', 'position' => 1, 'is_restricted' => 0, 'is_hidden' => 0],
                 ['id' => 2, 'name' => 'Tag B', 'slug' => 'tag-b', 'color' => '#0f0', 'position' => 2, 'is_restricted' => 0, 'is_hidden' => 0],
             ],
-            'discussions'    => $discussions,
-            'posts'          => $posts,
+            'discussions' => $discussions,
+            'posts' => $posts,
             'discussion_tag' => $discussionTag,
             'discussion_sticky_tag' => [
                 ['discussion_id' => self::STICKY_IN_TAG_A_ONLY, 'tag_id' => 1],
@@ -166,7 +166,7 @@ class TagStickyRegressionTest extends TestCase
     {
         $request = $this->request('GET', '/api/discussions')->withQueryParams([
             'filter' => ['tag' => $tagSlug],
-            'page'   => ['limit' => (string) $limit, 'offset' => (string) $offset],
+            'page' => ['limit' => (string) $limit, 'offset' => (string) $offset],
         ]);
 
         $response = $this->send($request);
@@ -298,10 +298,10 @@ class TagStickyRegressionTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/'.self::SUPER_STICKY, [
                 'authenticatedAs' => 3,
-                'json'            => [
+                'json' => [
                     'data' => [
-                        'type'       => 'discussions',
-                        'id'         => (string) self::SUPER_STICKY,
+                        'type' => 'discussions',
+                        'id' => (string) self::SUPER_STICKY,
                         'attributes' => ['isStickiest' => false],
                     ],
                 ],
@@ -313,10 +313,10 @@ class TagStickyRegressionTest extends TestCase
         $response = $this->send(
             $this->request('PATCH', '/api/discussions/'.self::STICKY_IN_TAG_A_ONLY, [
                 'authenticatedAs' => 3,
-                'json'            => [
+                'json' => [
                     'data' => [
-                        'type'       => 'discussions',
-                        'id'         => (string) self::STICKY_IN_TAG_A_ONLY,
+                        'type' => 'discussions',
+                        'id' => (string) self::STICKY_IN_TAG_A_ONLY,
                         'attributes' => ['isTagSticky' => false, 'stickyTagIds' => []],
                     ],
                 ],

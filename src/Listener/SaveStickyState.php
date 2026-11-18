@@ -2,8 +2,8 @@
 
 namespace HuseyinFiliz\Stickiest\Listener;
 
-use Flarum\Discussion\Event\Saving;
 use Flarum\Discussion\Discussion;
+use Flarum\Discussion\Event\Saving;
 use HuseyinFiliz\Stickiest\Event\DiscussionTagStickyStateChanged;
 use Illuminate\Support\Arr;
 
@@ -35,7 +35,12 @@ class SaveStickyState
 
                 if ($wasTagSticky !== $isTagSticky || $oldTagIds !== $newTagIds) {
                     $discussion->raise(new DiscussionTagStickyStateChanged(
-                        $discussion, $actor, $wasTagSticky, $isTagSticky, $oldTagIds, $newTagIds
+                        $discussion,
+                        $actor,
+                        $wasTagSticky,
+                        $isTagSticky,
+                        $oldTagIds,
+                        $newTagIds
                     ));
                 }
             });

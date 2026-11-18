@@ -18,5 +18,6 @@ class DiscussionTagStickyStateChanged
         public bool $isTagSticky,
         public array $oldTagIds,
         public array $newTagIds
-    ) {}
+    ) {
+    }
 }

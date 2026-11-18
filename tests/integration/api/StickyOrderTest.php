@@ -23,51 +23,51 @@ class StickyOrderTest extends TestCase
             ],
             'tags' => [
                 [
-                    'id'          => 1,
-                    'name'        => 'General',
-                    'slug'        => 'general',
-                    'color'       => '#888',
-                    'position'    => 1,
+                    'id' => 1,
+                    'name' => 'General',
+                    'slug' => 'general',
+                    'color' => '#888',
+                    'position' => 1,
                     'is_restricted' => 0,
-                    'is_hidden'   => 0,
+                    'is_hidden' => 0,
                 ],
             ],
             'discussions' => [
                 [
-                    'id'             => 1,
-                    'title'          => 'Regular Discussion',
-                    'slug'           => 'regular-discussion',
-                    'created_at'     => Carbon::now()->subDays(3)->toDateTimeString(),
+                    'id' => 1,
+                    'title' => 'Regular Discussion',
+                    'slug' => 'regular-discussion',
+                    'created_at' => Carbon::now()->subDays(3)->toDateTimeString(),
                     'last_posted_at' => Carbon::now()->subDays(3)->toDateTimeString(),
-                    'user_id'        => 1,
-                    'first_post_id'  => 1,
-                    'comment_count'  => 1,
-                    'is_stickiest'   => false,
-                    'is_tag_sticky'  => false,
+                    'user_id' => 1,
+                    'first_post_id' => 1,
+                    'comment_count' => 1,
+                    'is_stickiest' => false,
+                    'is_tag_sticky' => false,
                 ],
                 [
-                    'id'             => 2,
-                    'title'          => 'Tag Sticky Discussion',
-                    'slug'           => 'tag-sticky-discussion',
-                    'created_at'     => Carbon::now()->subDays(2)->toDateTimeString(),
+                    'id' => 2,
+                    'title' => 'Tag Sticky Discussion',
+                    'slug' => 'tag-sticky-discussion',
+                    'created_at' => Carbon::now()->subDays(2)->toDateTimeString(),
                     'last_posted_at' => Carbon::now()->subDays(2)->toDateTimeString(),
-                    'user_id'        => 1,
-                    'first_post_id'  => 2,
-                    'comment_count'  => 1,
-                    'is_stickiest'   => false,
-                    'is_tag_sticky'  => true,
+                    'user_id' => 1,
+                    'first_post_id' => 2,
+                    'comment_count' => 1,
+                    'is_stickiest' => false,
+                    'is_tag_sticky' => true,
                 ],
                 [
-                    'id'             => 3,
-                    'title'          => 'Super Sticky Discussion',
-                    'slug'           => 'super-sticky-discussion',
-                    'created_at'     => Carbon::now()->subDays(1)->toDateTimeString(),
+                    'id' => 3,
+                    'title' => 'Super Sticky Discussion',
+                    'slug' => 'super-sticky-discussion',
+                    'created_at' => Carbon::now()->subDays(1)->toDateTimeString(),
                     'last_posted_at' => Carbon::now()->subDays(1)->toDateTimeString(),
-                    'user_id'        => 1,
-                    'first_post_id'  => 3,
-                    'comment_count'  => 1,
-                    'is_stickiest'   => true,
-                    'is_tag_sticky'  => false,
+                    'user_id' => 1,
+                    'first_post_id' => 3,
+                    'comment_count' => 1,
+                    'is_stickiest' => true,
+                    'is_tag_sticky' => false,
                 ],
             ],
             'posts' => [
@@ -96,7 +96,7 @@ class StickyOrderTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $ids  = array_column($body['data'], 'id');
+        $ids = array_column($body['data'], 'id');
 
         $this->assertEquals(3, (int) $ids[0], 'Super sticky should be first');
     }
@@ -113,7 +113,7 @@ class StickyOrderTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $ids  = array_column($body['data'], 'id');
+        $ids = array_column($body['data'], 'id');
 
         $this->assertNotContains('2', $ids, 'Tag sticky should be hidden in All Discussions when setting is off');
     }
@@ -130,7 +130,7 @@ class StickyOrderTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $ids  = array_column($body['data'], 'id');
+        $ids = array_column($body['data'], 'id');
 
         $this->assertContains('2', $ids, 'Tag sticky should appear in All Discussions when setting is on');
     }
@@ -147,7 +147,7 @@ class StickyOrderTest extends TestCase
         $this->assertEquals(200, $response->getStatusCode());
 
         $body = json_decode($response->getBody()->getContents(), true);
-        $ids  = array_column($body['data'], 'id');
+        $ids = array_column($body['data'], 'id');
 
         $this->assertContains('3', $ids, 'Super sticky must always appear');
         $this->assertEquals(3, (int) $ids[0], 'Super sticky must be first');
