@@ -11,9 +11,9 @@ class DiscussionStickiestPost extends AbstractEventPost implements MergeableInte
 {
     public static string $type = 'discussionStickiest';
 
-    public function saveAfter(Post $previous = null): static
+    public function saveAfter(?Post $previous = null): static
     {
-        // Önceki post aynı tipte ve aynı kullanıcıdansa birleştir
+        // Merge consecutive events of the same type by the same actor.
         if ($previous instanceof static && $this->user_id === $previous->user_id) {
             if ($previous->content['stickiest'] !== $this->content['stickiest']) {
                 $previous->delete();

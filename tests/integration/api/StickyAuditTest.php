@@ -36,8 +36,11 @@ class StickyAuditTest extends StickyTestCase
 
         $logs = AuditLog::where('action', 'like', 'discussion.tag_%')->orderBy('id')->get();
         $this->assertSame(['discussion.tag_stickied', 'discussion.tag_sticky_tags_changed', 'discussion.tag_unstickied'], $logs->pluck('action')->all());
-        $this->assertSame(['discussion_id' => 1, 'old_tag_ids' => [], 'new_tag_ids' => [1]], $logs[0]->payload);
-        $this->assertSame(['discussion_id' => 1, 'old_tag_ids' => [1], 'new_tag_ids' => []], $logs[1]->payload);
+        foreach ([0 => [[], [1]], 1 => [[1], []]] as $index => [$oldTagIds, $newTagIds]) {
+            $this->assertSame(1, $logs[$index]->payload['discussion_id']);
+            $this->assertSame($oldTagIds, $logs[$index]->payload['old_tag_ids']);
+            $this->assertSame($newTagIds, $logs[$index]->payload['new_tag_ids']);
+        }
         $this->assertSame([2, 2, 2], $logs->pluck('actor_id')->all());
     }
 

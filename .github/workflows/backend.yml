@@ -12,5 +12,6 @@ jobs:
       enable_backend_testing: true
       enable_phpstan: true
       max_parallel: 4
+      runner_type: ubuntu-24.04
 
       backend_directory: .

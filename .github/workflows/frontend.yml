@@ -3,20 +3,46 @@ name: Stickiest JS
 on: [workflow_dispatch, push, pull_request]
 
 permissions:
-  contents: write
+  contents: read
 
 jobs:
   run:
-    uses: flarum/framework/.github/workflows/REUSABLE_frontend.yml@6f4e63540f569c685dc6d45777e84fdc7e90eeeb # 2.x
-    with:
-      enable_bundlewatch: false
-      enable_prettier: true
-      enable_typescript: true
-      enable_tests: true
+    name: Checks & Build
+    runs-on: ubuntu-24.04
+    env:
+      COMPOSER_ROOT_VERSION: dev-2.x
+      COMPOSER_AUTH: '{"github-oauth":{"github.com":"${{ github.token }}"}}'
+    steps:
+      - name: Check out code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      frontend_directory: ./js
-      backend_directory: .
-      js_package_manager: yarn
-      main_git_branch: 2.x
-    secrets:
-      bundlewatch_github_token: ${{ secrets.BUNDLEWATCH_GITHUB_TOKEN }}
+      - name: Set up Node
+        uses: actions/setup-node@820762786026740c76f36085b0efc47a31fe5020 # v7.0.0
+        with:
+          node-version: 24
+
+      - name: Enable Corepack
+        run: corepack enable
+
+      - name: Set up PHP
+        uses: shivammathur/setup-php@f3e473d116dcccaddc5834248c87452386958240 # 2.37.2
+        with:
+          php-version: '8.3'
+          tools: composer:v2
+
+      - name: Install Composer dependencies
+        run: composer install --no-interaction --prefer-dist
+
+      - name: Install JavaScript dependencies
+        run: yarn install --immutable
+        working-directory: js
+
+      - name: Check and build JavaScript
+        working-directory: js
+        run: |
+          yarn test --runInBand
+          yarn format-check
+          yarn check-typings
+          yarn check-typings-coverage
+          yarn build-typings
+          yarn build
