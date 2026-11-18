@@ -2,255 +2,127 @@
 
 namespace HuseyinFiliz\Stickiest\Tests\unit;
 
+use Flarum\Api\Resource\DiscussionResource;
+use Flarum\Extension\ExtensionManager;
+use Flarum\Http\SlugDriverInterface;
+use Flarum\Http\SlugManager;
 use Flarum\Search\Database\DatabaseSearchState;
 use Flarum\Search\SearchCriteria;
 use Flarum\Settings\SettingsRepositoryInterface;
 use Flarum\Tags\Search\Filter\TagFilter;
-use Flarum\Tags\TagRepository;
+use Flarum\Tags\Tag;
 use Flarum\User\User;
 use HuseyinFiliz\Stickiest\Search\StickySearchMutator;
-use Illuminate\Database\Connection;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Query\Builder as QueryBuilder;
+use Illuminate\Database\SQLiteConnection;
 use PHPUnit\Framework\TestCase;
-
-abstract class DummyEloquentBuilder extends Builder
-{
-    public function leftJoin($table, $first = null, $operator = null, $second = null)
-    {
-        return $this;
-    }
-}
 
 class StickySearchMutatorTest extends TestCase
 {
-    private function makeUser(): User
+    private function mutator(array $settings = [], bool $coreSticky = false): StickySearchMutator
     {
-        return $this->createMock(User::class);
+        $repository = $this->createStub(SettingsRepositoryInterface::class);
+        $repository->method('get')->willReturnCallback(fn ($key, $default = null) => $settings[$key] ?? $default);
+        $tag = new Tag;
+        $tag->id = 5;
+        $driver = $this->createStub(SlugDriverInterface::class);
+        $driver->method('fromSlug')->willReturn($tag);
+        $slugs = $this->createStub(SlugManager::class);
+        $slugs->method('forResource')->willReturn($driver);
+        $extensions = $this->createStub(ExtensionManager::class);
+        $extensions->method('isEnabled')->willReturn($coreSticky);
+        $resource = new class extends DiscussionResource {
+            public function __construct() {}
+        };
+
+        return new StickySearchMutator($repository, $slugs, $resource, $extensions);
     }
 
-    private function makeSettings(array $values = []): SettingsRepositoryInterface
+    private function state(bool $tag = false, bool $fulltext = false): DatabaseSearchState
     {
-        $settings = $this->createMock(SettingsRepositoryInterface::class);
-        $settings->method('get')->willReturnCallback(function (string $key, $default = null) use ($values) {
-            return $values[$key] ?? $default;
-        });
+        $query = new QueryBuilder(new SQLiteConnection(new \PDO('sqlite::memory:')));
+        $query->from('discussions')->orderByDesc('last_posted_at');
+        $state = new DatabaseSearchState(new User, $fulltext);
+        $state->setQuery(new Builder($query));
 
-        return $settings;
+        if ($tag) {
+            $state->addActiveFilter($this->createStub(TagFilter::class));
+        }
+
+        return $state;
     }
 
-    private function makeTagRepository(?int $tagId = 1): TagRepository
+    private function criteria(array $filters = [], bool $default = true): SearchCriteria
     {
-        $repo = $this->createMock(TagRepository::class);
-        $repo->method('getIdForSlug')->willReturn($tagId);
-
-        return $repo;
+        return new SearchCriteria(new User, $filters, sortIsDefault: $default);
     }
 
-    private function makeCriteria(array $filters = [], bool $sortIsDefault = true): SearchCriteria
-    {
-        // SearchCriteria::__construct(User $actor, ?array $sort, ?int $limit, int $offset, array $filters)
-        $criteria = new SearchCriteria($this->makeUser(), $filters);
-        $criteria->sortIsDefault = $sortIsDefault;
-
-        return $criteria;
-    }
-
-    private function makeState(array $activeFilters = []): array
-    {
-        $connection = $this->createMock(Connection::class);
-        $connection->method('getTablePrefix')->willReturn('');
-
-        $baseQuery = $this->createMock(QueryBuilder::class);
-        $baseQuery->orders = null;
-        $baseQuery->method('getConnection')->willReturn($connection);
-
-        $eloquentQuery = $this->getMockBuilder(DummyEloquentBuilder::class)
-            ->disableOriginalConstructor()
-            ->onlyMethods(['getQuery', 'where', 'leftJoin'])
-            ->getMock();
-        $eloquentQuery->method('getQuery')->willReturn($baseQuery);
-        $eloquentQuery->method('leftJoin')->willReturnSelf();
-
-        $state = $this->createMock(DatabaseSearchState::class);
-        $state->method('getQuery')->willReturn($eloquentQuery);
-        $state->method('getActiveFilters')->willReturn($activeFilters);
-        $state->method('isFulltextSearch')->willReturn(false);
-
-        return [$state, $baseQuery, $eloquentQuery];
-    }
-
-    /** @test */
     public function test_it_skips_non_default_sort(): void
     {
-        $mutator = new StickySearchMutator(
-            $this->makeSettings(),
-            $this->makeTagRepository()
-        );
-
-        $criteria = $this->makeCriteria([], false);
-        [$state] = $this->makeState();
-
-        $state->expects($this->never())->method('getActiveFilters');
-
-        $mutator($state, $criteria);
+        $state = $this->state();
+        $before = $state->getQuery()->toSql();
+        ($this->mutator())($state, $this->criteria([], false));
+        $this->assertSame($before, $state->getQuery()->toSql());
     }
 
-    /** @test */
     public function test_it_skips_fulltext_search(): void
     {
-        $mutator = new StickySearchMutator(
-            $this->makeSettings(),
-            $this->makeTagRepository()
-        );
-
-        $criteria = $this->makeCriteria();
-
-        $baseQuery = $this->createMock(QueryBuilder::class);
-        $baseQuery->orders = null;
-
-        $eloquentQuery = $this->createMock(Builder::class);
-        $eloquentQuery->method('getQuery')->willReturn($baseQuery);
-
-        $state = $this->createMock(DatabaseSearchState::class);
-        $state->method('getQuery')->willReturn($eloquentQuery);
-        $state->method('isFulltextSearch')->willReturn(true);
-        $state->expects($this->never())->method('getActiveFilters');
-
-        $mutator($state, $criteria);
+        $state = $this->state(fulltext: true);
+        $before = $state->getQuery()->toSql();
+        ($this->mutator())($state, $this->criteria());
+        $this->assertSame($before, $state->getQuery()->toSql());
     }
 
-    /** @test */
-    public function test_it_detects_tag_page_via_active_filters(): void
+    public function test_it_detects_tag_pages_with_scalar_or_array_filters(): void
     {
-        $tagFilter = $this->createMock(TagFilter::class);
-
-        $mutator = new StickySearchMutator(
-            $this->makeSettings(),
-            $this->makeTagRepository(5)
-        );
-
         foreach (['general', ['general']] as $slug) {
-            $criteria = $this->makeCriteria(['tag' => $slug]);
-            [$state, $baseQuery, $eloquentQuery] = $this->makeState([$tagFilter]);
-
-
-
-            $mutator($state, $criteria);
-
-            $this->assertIsArray($baseQuery->orders);
-            $this->assertEquals('is_stickiest', $baseQuery->orders[0]['column']);
+            $state = $this->state(tag: true);
+            ($this->mutator())($state, $this->criteria(['tag' => $slug]));
+            $this->assertStringContainsString('left join "discussion_sticky_tag"', $state->getQuery()->toSql());
+            $this->assertSame([5], $state->getQuery()->getBindings());
+            $this->assertEmpty($state->getQuery()->getQuery()->wheres);
         }
     }
 
-    /** @test */
-    public function test_it_applies_full_tag_sticky_ordering_hierarchy_without_filtering(): void
+    public function test_it_preserves_the_sticky_hierarchy_and_existing_sort(): void
     {
-        $tagFilter = $this->createMock(TagFilter::class);
-        $extensions = $this->createMock(\Flarum\Extension\ExtensionManager::class);
-        $extensions->method('isEnabled')->with('flarum-sticky')->willReturn(true);
-
-        $mutator = new StickySearchMutator(
-            $this->makeSettings(),
-            $this->makeTagRepository(5),
-            $extensions
+        $state = $this->state(tag: true);
+        ($this->mutator(coreSticky: true))($state, $this->criteria(['tag' => 'general']));
+        $this->assertStringContainsString(
+            'order by "is_stickiest" desc, CASE WHEN discussion_sticky_tag.tag_id IS NOT NULL THEN 1 ELSE 0 END DESC, "is_sticky" desc, "last_posted_at" desc',
+            $state->getQuery()->toSql()
         );
-
-        $criteria = $this->makeCriteria(['tag' => 'general']);
-        [$state, $baseQuery, $eloquentQuery] = $this->makeState([$tagFilter]);
-
-        $baseQuery->orders = [
-            ['column' => 'last_posted_at', 'direction' => 'desc']
-        ];
-
-        // Ensure leftJoin is called for the tag pivot
-        $eloquentQuery->expects($this->once())
-            ->method('leftJoin')
-            ->with('discussion_sticky_tag', $this->isType('callable'))
-            ->willReturnSelf();
-
-        // Crucial: we must NEVER call where() on a tag page to exclude other tags' discussions!
-        $eloquentQuery->expects($this->never())->method('where');
-
-        $mutator($state, $criteria);
-
-        $this->assertCount(4, $baseQuery->orders);
-        $this->assertEquals('is_stickiest', $baseQuery->orders[0]['column']);
-        $this->assertEquals('Raw', $baseQuery->orders[1]['type']);
-        $this->assertStringContainsString('discussion_sticky_tag.tag_id IS NOT NULL', $baseQuery->orders[1]['sql']);
-        $this->assertEquals('is_sticky', $baseQuery->orders[2]['column']);
-        $this->assertEquals('last_posted_at', $baseQuery->orders[3]['column']);
     }
 
-    /** @test */
-    public function test_it_handles_array_tag_filter_without_type_error(): void
+    public function test_multiple_tag_filters_do_not_pin_the_first_tag_arbitrarily(): void
     {
-        $tagFilter = $this->createMock(TagFilter::class);
-        $repo = $this->makeTagRepository(3);
-
-        $repo->expects($this->once())
-             ->method('getIdForSlug')
-             ->with($this->isType('string'))
-             ->willReturn(3);
-
-        $mutator = new StickySearchMutator($this->makeSettings(), $repo);
-
-        $criteria = $this->makeCriteria(['tag' => ['general']]);
-        [$state, $baseQuery, $eloquentQuery] = $this->makeState([$tagFilter]);
-
-
-        $mutator($state, $criteria);
+        foreach ([['general', 'other'], 'general,other'] as $slugs) {
+            $state = $this->state(tag: true);
+            ($this->mutator())($state, $this->criteria(['tag' => $slugs]));
+            $this->assertStringNotContainsString('discussion_sticky_tag', $state->getQuery()->toSql());
+        }
     }
 
-    /** @test */
-    public function test_it_prepends_stickiest_order_on_all_discussions(): void
+    public function test_it_prepends_super_stickies_on_all_discussions(): void
     {
-        $mutator = new StickySearchMutator(
-            $this->makeSettings(),
-            $this->makeTagRepository()
-        );
-
-        $criteria = $this->makeCriteria();
-        [$state, $baseQuery, $eloquentQuery] = $this->makeState([]);
-
-        $eloquentQuery->method('where')->willReturnSelf();
-
-        $mutator($state, $criteria);
-
-        $this->assertIsArray($baseQuery->orders);
-        $this->assertEquals('is_stickiest', $baseQuery->orders[0]['column']);
-        $this->assertEquals('desc', $baseQuery->orders[0]['direction']);
+        $state = $this->state();
+        ($this->mutator())($state, $this->criteria());
+        $this->assertStringContainsString('order by "is_stickiest" desc, "last_posted_at" desc', $state->getQuery()->toSql());
     }
 
-    /** @test */
-    public function test_it_hides_tag_stickies_in_all_discussions_when_setting_disabled(): void
+    public function test_it_hides_tag_stickies_when_the_setting_is_disabled(): void
     {
-        $mutator = new StickySearchMutator(
-            $this->makeSettings(['huseyinfiliz-stickiest.show_tag_sticky_in_all' => false]),
-            $this->makeTagRepository()
-        );
-
-        $criteria = $this->makeCriteria();
-        [$state, $baseQuery, $eloquentQuery] = $this->makeState([]);
-
-        $eloquentQuery->expects($this->once())->method('where')->willReturnSelf();
-
-        $mutator($state, $criteria);
+        $state = $this->state();
+        ($this->mutator())($state, $this->criteria());
+        $this->assertStringContainsString('("is_tag_sticky" = ? or "is_stickiest" = ?)', $state->getQuery()->toSql());
+        $this->assertSame([false, true], $state->getQuery()->getBindings());
     }
 
-    /** @test */
-    public function test_it_skips_tag_sticky_filter_when_show_all_setting_enabled(): void
+    public function test_it_keeps_tag_stickies_when_the_setting_is_enabled(): void
     {
-        $mutator = new StickySearchMutator(
-            $this->makeSettings(['huseyinfiliz-stickiest.show_tag_sticky_in_all' => true]),
-            $this->makeTagRepository()
-        );
-
-        $criteria = $this->makeCriteria();
-        [$state, $baseQuery, $eloquentQuery] = $this->makeState([]);
-
-        $eloquentQuery->expects($this->never())->method('where');
-
-        $mutator($state, $criteria);
+        $state = $this->state();
+        ($this->mutator(['huseyinfiliz-stickiest.show_tag_sticky_in_all' => true]))($state, $this->criteria());
+        $this->assertEmpty($state->getQuery()->getQuery()->wheres);
     }
 }

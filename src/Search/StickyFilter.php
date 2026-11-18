@@ -4,6 +4,7 @@ namespace HuseyinFiliz\Stickiest\Search;
 
 use Flarum\Search\Database\DatabaseSearchState;
 use Flarum\Search\Filter\FilterInterface;
+use Flarum\Search\SearchState;
 
 /**
  * @implements FilterInterface<DatabaseSearchState>
@@ -15,7 +16,7 @@ class StickyFilter implements FilterInterface
         return 'stickiest';
     }
 
-    public function filter(DatabaseSearchState $state, string|array $value, bool $negate): void
+    public function filter(SearchState $state, string|array $value, bool $negate): void
     {
         $state->getQuery()->where('is_stickiest', !$negate);
     }

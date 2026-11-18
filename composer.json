@@ -12,10 +12,13 @@
     "license": "MIT",
     "require": {
         "flarum/core": "^2.0",
-        "flarum/tags": "*"
+        "flarum/tags": "^2.0"
     },
     "require-dev": {
-        "flarum/testing": "^2.0"
+        "flarum/testing": "^2.0",
+        "flarum/sticky": "^2.0",
+        "flarum/audit": "^2.0",
+        "flarum/phpstan": "^2.0"
     },
     "authors": [
         {
@@ -42,7 +45,8 @@
         ],
         "test:unit": "phpunit -c tests/phpunit.unit.xml",
         "test:integration": "phpunit -c tests/phpunit.integration.xml",
-        "test:setup": "php tests/integration/setup.php"
+        "test:setup": "php tests/integration/setup.php",
+        "analyse:phpstan": "phpstan analyse"
     },
     "scripts-descriptions": {
         "test": "Runs all tests.",
@@ -52,6 +56,10 @@
         "flarum-extension": {
             "title": "Stickiest",
             "category": "feature",
+            "optional-dependencies": [
+                "flarum/sticky",
+                "flarum/audit"
+            ],
             "icon": {
                 "name": "fas fa-thumbtack",
                 "color": "#fff",

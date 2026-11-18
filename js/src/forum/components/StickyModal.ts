@@ -5,6 +5,7 @@ import Switch from 'flarum/common/components/Switch';
 import Stream from 'flarum/common/utils/Stream';
 import type Discussion from 'flarum/common/models/Discussion';
 import type Mithril from 'mithril';
+import stickyAttributes from '../utils/stickyAttributes';
 
 interface StickyModalAttrs extends IFormModalAttrs {
   discussion: Discussion;
@@ -21,7 +22,7 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
 
     const discussion = this.attrs.discussion;
 
-    // canSticky() flarum/sticky yoksa undefined döner
+    // Core Sticky is optional.
     this.isSticky = Stream(discussion.isSticky?.() || false);
     this.isStickiest = Stream(discussion.isStickiest() || false);
     this.isTagSticky = Stream(discussion.isTagSticky() || false);
@@ -45,12 +46,12 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
     const discussion = this.attrs.discussion;
     const discussionTags: any[] = (discussion as any).tags?.() || [];
 
-    // flarum/sticky yüklü mü kontrol et
+    // Only expose controls the actor can use.
     const hasStickyExtension = typeof discussion.canSticky === 'function';
 
     const items: Mithril.Children[] = [];
 
-    // Normal Sticky - sadece flarum/sticky yüklüyse göster
+    // Normal sticky
     if (hasStickyExtension && discussion.canSticky?.()) {
       items.push(
         m('.Form-group', {}, [
@@ -61,8 +62,8 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
               onchange: (value: boolean) => {
                 this.isSticky(value);
                 if (value) {
-                  this.isStickiest(false);
-                  this.isTagSticky(false);
+                  if (discussion.canStickiest()) this.isStickiest(false);
+                  if (discussion.canTagSticky()) this.isTagSticky(false);
                 }
               },
             },
@@ -84,7 +85,7 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
               onchange: (value: boolean) => {
                 this.isStickiest(value);
                 if (value) {
-                  this.isSticky(false);
+                  if (discussion.canSticky?.()) this.isSticky(false);
                 }
               },
             },
@@ -106,7 +107,7 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
               onchange: (value: boolean) => {
                 this.isTagSticky(value);
                 if (value) {
-                  this.isSticky(false);
+                  if (discussion.canSticky?.()) this.isSticky(false);
                 }
               },
             },
@@ -117,7 +118,7 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
       );
     }
 
-    // Tag Seçimi
+    // Tag selection
     if (discussion.canTagSticky() && this.isTagSticky() && discussionTags.length > 0) {
       const tagCheckboxes = discussionTags.map((tag: any) => {
         const tagId = Number(tag.id());
@@ -177,18 +178,12 @@ export default class StickyModal extends FormModal<StickyModalAttrs> {
     this.loading = true;
 
     const discussion = this.attrs.discussion;
-    const hasStickyExtension = typeof discussion.canSticky === 'function';
-
-    const data: Record<string, any> = {
+    const data = stickyAttributes(discussion, {
+      isSticky: this.isSticky(),
       isStickiest: this.isStickiest(),
       isTagSticky: this.isTagSticky(),
-      stickyTagIds: this.isTagSticky() ? this.selectedTagIds() : [],
-    };
-
-    // Sadece flarum/sticky yüklüyse isSticky gönder
-    if (hasStickyExtension) {
-      data.isSticky = this.isSticky() && !this.isStickiest() && !this.isTagSticky();
-    }
+      selectedTagIds: this.selectedTagIds(),
+    });
 
     this.attrs.discussion
       .save(data)
