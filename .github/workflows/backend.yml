@@ -7,7 +7,7 @@ permissions:
 
 jobs:
   run:
-    uses: flarum/framework/.github/workflows/REUSABLE_backend.yml@6f4e63540f569c685dc6d45777e84fdc7e90eeeb # 2.x
+    uses: flarum/framework/.github/workflows/REUSABLE_backend.yml@83ea68baa2a5ba6abafbdcb8628be69bacabd19e # 2.x
     with:
       enable_backend_testing: true
       enable_phpstan: true
